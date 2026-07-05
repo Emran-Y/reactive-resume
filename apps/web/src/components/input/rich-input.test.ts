@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveHighlightToolbarState } from "./rich-input";
+import { resolveHighlightToolbarState } from "./rich-input.utils";
 
 describe("resolveHighlightToolbarState", () => {
 	it("shows legacy colorless highlights as default yellow and clearable", () => {

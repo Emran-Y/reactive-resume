@@ -3,7 +3,7 @@ import { Trans } from "@lingui/react/macro";
 import { ArrowRightIcon, InfoIcon, LightningIcon, SparkleIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { Alert, AlertDescription } from "@reactive-resume/ui/components/alert";
@@ -51,11 +51,10 @@ export function ResumeAnalysisSectionBuilder() {
 	const resume = useResume();
 
 	const resumeId = resume?.id ?? "";
-	const providersQuery = useQuery(orpc.aiProviders.list.queryOptions());
-	const aiEnabled =
-		providersQuery.data?.some((provider) => provider.enabled && provider.testStatus === "success") ?? false;
+	const { data: providers } = useQuery(orpc.aiProviders.list.queryOptions());
+	const aiEnabled = providers?.some((provider) => provider.enabled && provider.testStatus === "success") ?? false;
 
-	const analysisQuery = useQuery({
+	const { data: analysis, isFetched: analysisFetched } = useQuery({
 		...orpc.resume.analysis.getById.queryOptions({ input: { id: resumeId } }),
 		enabled: !!resume,
 	});
@@ -88,10 +87,11 @@ export function ResumeAnalysisSectionBuilder() {
 		},
 	});
 
-	const analysis = analysisQuery.data;
 	const score = analysis?.overallScore ?? null;
 	const updatedAt = analysis?.updatedAt ?? null;
-	const [updatedAtLabel, setUpdatedAtLabel] = useState<string | null>(null);
+	// Derived during render (not via state+effect): the analysis comes from a client-fetched query,
+	// so the server render has no date and there's no hydration mismatch to defer around.
+	const updatedAtLabel = updatedAt ? new Date(updatedAt).toLocaleString() : null;
 	const analyzeLabel = isPending ? t`Analyzing…` : t`Analyze Resume`;
 
 	const scoreTone = useMemo(() => {
@@ -100,10 +100,6 @@ export function ResumeAnalysisSectionBuilder() {
 		if (score >= 60) return "bg-amber-600";
 		return "bg-rose-600";
 	}, [score]);
-
-	useEffect(() => {
-		setUpdatedAtLabel(updatedAt ? new Date(updatedAt).toLocaleString() : null);
-	}, [updatedAt]);
 
 	const onAnalyze = () => {
 		if (!resume) return;
@@ -168,7 +164,7 @@ export function ResumeAnalysisSectionBuilder() {
 						</div>
 					</div>
 
-					{analysisQuery.isFetched && !analysis && !isPending && (
+					{analysisFetched && !analysis && !isPending && (
 						<div className="rounded-md border border-dashed p-3">
 							<p className="max-w-xs text-muted-foreground text-sm">
 								<Trans>Run your first analysis to get a scorecard, strengths, and prioritized suggestions.</Trans>

@@ -3,7 +3,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { i18n } from "@lingui/core";
 import { localeMap } from "@/libs/locale";
-import { getLocaleOptions } from "./combobox";
+import { getLocaleOptions } from "./locale-options";
 
 beforeAll(() => {
 	i18n.loadAndActivate({ locale: "en", messages: {} });

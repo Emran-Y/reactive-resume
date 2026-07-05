@@ -5,6 +5,7 @@
 // shape: render a SectionItem per data row with title/subtitle mapped to specific
 // fields, plus an "Add a new X" button. Test them together to amortize the mock setup.
 
+import type { Resume } from "@/features/resume/builder/draft";
 import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { i18n } from "@lingui/core";
@@ -87,19 +88,20 @@ type SectionItemProps = {
 };
 
 vi.mock("@/features/resume/builder/draft", () => ({
-	useCurrentResume: () => ({
-		data: {
-			sections: {
-				awards: { title: "Awards", columns: 1, hidden: false, items: sections.awards },
-				certifications: { title: "Certifications", columns: 1, hidden: false, items: sections.certifications },
-				interests: { title: "Interests", columns: 1, hidden: false, items: sections.interests },
-				languages: { title: "Languages", columns: 1, hidden: false, items: sections.languages },
-				publications: { title: "Publications", columns: 1, hidden: false, items: sections.publications },
-				references: { title: "References", columns: 1, hidden: false, items: sections.references },
-				volunteer: { title: "Volunteer", columns: 1, hidden: false, items: sections.volunteer },
+	useCurrentBuilderResumeSelector: (selector: (resume: Resume) => unknown) =>
+		selector({
+			data: {
+				sections: {
+					awards: { title: "Awards", columns: 1, hidden: false, items: sections.awards },
+					certifications: { title: "Certifications", columns: 1, hidden: false, items: sections.certifications },
+					interests: { title: "Interests", columns: 1, hidden: false, items: sections.interests },
+					languages: { title: "Languages", columns: 1, hidden: false, items: sections.languages },
+					publications: { title: "Publications", columns: 1, hidden: false, items: sections.publications },
+					references: { title: "References", columns: 1, hidden: false, items: sections.references },
+					volunteer: { title: "Volunteer", columns: 1, hidden: false, items: sections.volunteer },
+				},
 			},
-		},
-	}),
+		} as unknown as Resume),
 	useUpdateResumeData: () => vi.fn(),
 }));
 vi.mock("../shared/section-base", () => ({

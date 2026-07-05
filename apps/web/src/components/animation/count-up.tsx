@@ -11,6 +11,15 @@ type CountUpProps = {
 	"aria-atomic"?: boolean | "true" | "false";
 };
 
+const getDecimalPlaces = (num: number): number => {
+	const str = num.toString();
+	if (str.includes(".")) {
+		const decimals = str.split(".")[1];
+		if (Number.parseInt(decimals, 10) !== 0) return decimals.length;
+	}
+	return 0;
+};
+
 // ponytail: from/direction/delay/startWhen/onStart/onEnd removed — no production caller passes them
 export function CountUp({
 	to,
@@ -30,15 +39,6 @@ export function CountUp({
 	const springValue = useSpring(motionValue, { damping, stiffness });
 
 	const isInView = useInView(ref, { once: true, margin: "0px" });
-
-	const getDecimalPlaces = (num: number): number => {
-		const str = num.toString();
-		if (str.includes(".")) {
-			const decimals = str.split(".")[1];
-			if (Number.parseInt(decimals, 10) !== 0) return decimals.length;
-		}
-		return 0;
-	};
 
 	const maxDecimals = getDecimalPlaces(to);
 

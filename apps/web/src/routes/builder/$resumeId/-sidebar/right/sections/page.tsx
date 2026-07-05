@@ -11,7 +11,7 @@ import {
 } from "@reactive-resume/ui/components/input-group";
 import { Switch } from "@reactive-resume/ui/components/switch";
 import { Combobox } from "@/components/ui/combobox";
-import { getLocaleOptions } from "@/features/locale/combobox";
+import { getLocaleOptions } from "@/features/locale/locale-options";
 import { useResume, useUpdateResumeData } from "@/features/resume/builder/draft";
 import { useSyncFormValues } from "@/hooks/use-sync-form-values";
 import { useAppForm } from "@/libs/tanstack-form";

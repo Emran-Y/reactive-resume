@@ -1,5 +1,6 @@
 import type { ResumeData } from "@reactive-resume/schema/resume/data";
 import type { DialogProps } from "../store";
+import type { ImportType } from "./import.utils";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { DownloadSimpleIcon, FileIcon, UploadSimpleIcon } from "@phosphor-icons/react";
@@ -31,6 +32,7 @@ import { getOrpcErrorMessage } from "@/libs/error-message";
 import { client, orpc } from "@/libs/orpc/client";
 import { useAppForm } from "@/libs/tanstack-form";
 import { useDialogStore } from "../store";
+import { detectJsonImportType } from "./import.utils";
 
 const formSchema = z.discriminatedUnion("type", [
 	z.object({
@@ -72,9 +74,6 @@ const formSchema = z.discriminatedUnion("type", [
 	}),
 ]);
 
-type FormValues = z.infer<typeof formSchema>;
-type ImportType = FormValues["type"];
-
 function fileToBase64(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -115,24 +114,6 @@ async function detectImportType(file: File): Promise<ImportType> {
 		} catch {
 			return "";
 		}
-	}
-
-	return "";
-}
-
-export function detectJsonImportType(parsed: unknown): ImportType {
-	if (!parsed || typeof parsed !== "object") return "";
-	const data = parsed as Record<string, unknown>;
-
-	// JSON Resume standard: top-level `basics`, without Reactive Resume's `sections`/`metadata`.
-	if ("basics" in data && !("sections" in data) && !("metadata" in data)) return "json-resume-json";
-
-	// Reactive Resume exports carry `sections` + `metadata`; the current schema's metadata has a `page` key,
-	// the legacy v4 schema does not. Best-effort guess — the user can override the type below.
-	if ("sections" in data || "metadata" in data) {
-		const metadata = data.metadata as Record<string, unknown> | undefined;
-		if (metadata && !("page" in metadata)) return "reactive-resume-v4-json";
-		return "reactive-resume-json";
 	}
 
 	return "";

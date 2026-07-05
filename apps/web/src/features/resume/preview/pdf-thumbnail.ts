@@ -1,4 +1,4 @@
-import type { PreviewPageSize } from "./preview.shared";
+import type { PreviewPageSize } from "./preview.shared.utils";
 import { getResumeThumbnailRenderSize, RESUME_THUMBNAIL_TARGET_WIDTH } from "./resume-thumbnail.shared";
 
 const canvasToBlob = async (canvas: HTMLCanvasElement) => {

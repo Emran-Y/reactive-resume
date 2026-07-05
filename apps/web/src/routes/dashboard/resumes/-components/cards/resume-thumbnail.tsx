@@ -39,7 +39,11 @@ const createResumeThumbnailUrl = async (data: ResumeData, signal: AbortSignal) =
 };
 
 function useResumeThumbnail(data: ResumeData | undefined, cacheKey: string | undefined): ThumbnailState {
-	const thumbnailQuery = useQuery({
+	const {
+		data: thumbnailData,
+		error: thumbnailError,
+		isError: thumbnailIsError,
+	} = useQuery({
 		queryKey: ["resume-thumbnail", cacheKey],
 		queryFn: ({ signal }) => {
 			if (!data) throw new Error("Resume data is required to generate a thumbnail.");
@@ -50,20 +54,20 @@ function useResumeThumbnail(data: ResumeData | undefined, cacheKey: string | und
 	});
 
 	useEffect(() => {
-		if (thumbnailQuery.error) console.error("Failed to generate resume thumbnail", thumbnailQuery.error);
-	}, [thumbnailQuery.error]);
+		if (thumbnailError) console.error("Failed to generate resume thumbnail", thumbnailError);
+	}, [thumbnailError]);
 
 	useEffect(() => {
-		const url = thumbnailQuery.data;
+		const url = thumbnailData;
 
 		return () => {
 			if (url) URL.revokeObjectURL(url);
 		};
-	}, [thumbnailQuery.data]);
+	}, [thumbnailData]);
 
 	if (!data || !cacheKey) return { status: "idle" };
-	if (thumbnailQuery.isError) return { status: "error" };
-	if (thumbnailQuery.data) return { status: "ready", url: thumbnailQuery.data };
+	if (thumbnailIsError) return { status: "error" };
+	if (thumbnailData) return { status: "ready", url: thumbnailData };
 
 	return { status: "loading" };
 }
@@ -71,15 +75,15 @@ function useResumeThumbnail(data: ResumeData | undefined, cacheKey: string | und
 export function ResumeThumbnail({ isLocked, resume }: ResumeThumbnailProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isInView = useInView(containerRef, { amount: 0.1, margin: "240px", once: true });
-	const resumeQuery = useQuery({
+	const { data: resumeData, isError: resumeIsError } = useQuery({
 		...orpc.resume.getById.queryOptions({ input: { id: resume.id } }),
 		enabled: isInView,
 	});
 	const thumbnail = useResumeThumbnail(
-		resumeQuery.data?.data,
+		resumeData?.data,
 		isInView ? getResumeThumbnailCacheKey(resume.id, resume.updatedAt) : undefined,
 	);
-	const hasFailed = resumeQuery.isError || thumbnail.status === "error";
+	const hasFailed = resumeIsError || thumbnail.status === "error";
 
 	return (
 		<div

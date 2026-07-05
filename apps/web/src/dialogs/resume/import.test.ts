@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectJsonImportType } from "./import";
+import { detectJsonImportType } from "./import.utils";
 
 describe("detectJsonImportType", () => {
 	it("detects JSON Resume by a top-level basics without Reactive Resume sections/metadata", () => {

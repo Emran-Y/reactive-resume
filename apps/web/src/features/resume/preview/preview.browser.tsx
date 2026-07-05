@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import type { PreviewPageSize, ResolvedResumePreviewProps } from "./preview.shared";
+import type { ResolvedResumePreviewProps } from "./preview.shared";
+import type { PreviewPageSize } from "./preview.shared.utils";
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { isRTL } from "@reactive-resume/utils/locale";
@@ -7,7 +8,8 @@ import { cn } from "@reactive-resume/utils/style";
 import { createResumePdfBlob } from "@/features/resume/export/pdf-document";
 import { usePreviewPausedStore, useResumeData } from "../builder/draft";
 import { PdfCanvasDocument, PdfCanvasPage } from "./pdf-canvas";
-import { getResumePreviewGapValue, getResumePreviewPageCount, ResumePreviewLoader } from "./preview.shared";
+import { ResumePreviewLoader } from "./preview.shared";
+import { getResumePreviewGapValue, getResumePreviewPageCount } from "./preview.shared.utils";
 import { ResumeAccessibleText } from "./resume-accessible-text";
 
 type PreviewPdf = {

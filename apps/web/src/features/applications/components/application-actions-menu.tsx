@@ -24,6 +24,7 @@ import {
 	DropdownMenuTrigger,
 } from "@reactive-resume/ui/components/dropdown-menu";
 import { cn } from "@reactive-resume/utils/style";
+import { useConfirm } from "@/hooks/use-confirm";
 import { orpc } from "@/libs/orpc/client";
 import { applicationsListQueryKey } from "../queries";
 
@@ -35,9 +36,15 @@ type Props = {
 	className?: string;
 };
 
+// Stop pointer/click from reaching the card (which would start a drag or open the detail panel).
+// React portals bubble synthetic events through the React tree, so a menu-item click would
+// otherwise reach the card's onClick even though the menu is portaled in the DOM.
+const stop = (event: React.SyntheticEvent) => event.stopPropagation();
+
 // Shared kebab menu for board cards and table rows: edit, move stage, archive, delete.
 export function ApplicationActionsMenu({ application, onEdit, showOnHover, className }: Props) {
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
 
 	const invalidate = () => {
 		void queryClient.invalidateQueries({ queryKey: applicationsListQueryKey() });
@@ -62,8 +69,13 @@ export function ApplicationActionsMenu({ application, onEdit, showOnHover, class
 		}),
 	);
 
-	// Stop pointer/click from reaching the card (which would start a drag or open the detail panel).
-	const stop = (event: React.SyntheticEvent) => event.stopPropagation();
+	const onDelete = async () => {
+		const confirmed = await confirm(t`Delete this application?`, {
+			description: t`"${application.role} · ${application.company}" and its full timeline will be permanently deleted. This can't be undone.`,
+			confirmText: t`Delete`,
+		});
+		if (confirmed) remove.mutate({ id: application.id });
+	};
 
 	return (
 		<div className={cn("shrink-0", className)}>
@@ -86,7 +98,7 @@ export function ApplicationActionsMenu({ application, onEdit, showOnHover, class
 						</Button>
 					}
 				/>
-				<DropdownMenuContent align="end" className="w-44">
+				<DropdownMenuContent align="end" className="w-44" onClick={stop}>
 					<DropdownMenuItem onClick={() => onEdit(application)}>
 						<PencilSimpleIcon />
 						<Trans>Edit</Trans>
@@ -118,7 +130,7 @@ export function ApplicationActionsMenu({ application, onEdit, showOnHover, class
 
 					<DropdownMenuSeparator />
 
-					<DropdownMenuItem variant="destructive" onClick={() => remove.mutate({ id: application.id })}>
+					<DropdownMenuItem variant="destructive" onClick={onDelete}>
 						<TrashIcon />
 						<Trans>Delete</Trans>
 					</DropdownMenuItem>

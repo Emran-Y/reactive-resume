@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 
+import type { Resume } from "@/features/resume/builder/draft";
 import { render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { i18n } from "@lingui/core";
@@ -75,14 +76,15 @@ type SectionItemProps = {
 };
 
 vi.mock("@/features/resume/builder/draft", () => ({
-	useCurrentResume: () => ({
-		data: {
-			sections: {
-				education: { title: "Education", columns: 1, hidden: false, items: educationItems },
-				experience: { title: "Experience", columns: 1, hidden: false, items: experienceItems },
+	useCurrentBuilderResumeSelector: (selector: (resume: Resume) => unknown) =>
+		selector({
+			data: {
+				sections: {
+					education: { title: "Education", columns: 1, hidden: false, items: educationItems },
+					experience: { title: "Experience", columns: 1, hidden: false, items: experienceItems },
+				},
 			},
-		},
-	}),
+		} as unknown as Resume),
 	useUpdateResumeData: () => vi.fn(),
 }));
 vi.mock("../shared/section-base", () => ({

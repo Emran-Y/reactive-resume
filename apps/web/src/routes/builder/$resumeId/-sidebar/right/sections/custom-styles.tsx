@@ -135,7 +135,9 @@ function CustomStylesSectionForm() {
 		const nextIntent = compactIntent({ ...currentIntent, ...patch });
 
 		updateResumeData((draft) => {
-			draft.metadata.styleRules ??= [];
+			// Plain `?? ` assignment (not `??=`) so React Compiler can memoize this component;
+			// the compiler bails on logical-assignment operators today. Behavior is identical.
+			draft.metadata.styleRules = draft.metadata.styleRules ?? [];
 			const rules = draft.metadata.styleRules;
 			const existingIndex = rules.findIndex((rule) => rule.id === ruleId);
 			const existingRule = rules[existingIndex];

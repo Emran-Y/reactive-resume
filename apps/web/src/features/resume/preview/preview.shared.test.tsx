@@ -3,12 +3,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { sampleResumeData } from "@reactive-resume/schema/resume/sample";
-import {
-	DEFAULT_PDF_PAGE_SIZE,
-	getResumePreviewPageCount,
-	getScaledPreviewPageSize,
-	ResumePreviewLoader,
-} from "./preview.shared";
+import { ResumePreviewLoader } from "./preview.shared";
+import { DEFAULT_PDF_PAGE_SIZE, getResumePreviewPageCount, getScaledPreviewPageSize } from "./preview.shared.utils";
 
 describe("ResumePreviewLoader", () => {
 	it("uses the same scaled page dimensions as the preview page", () => {

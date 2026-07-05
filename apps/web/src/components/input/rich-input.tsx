@@ -57,9 +57,9 @@ import { cn } from "@reactive-resume/utils/style";
 import { usePrompt } from "@/hooks/use-prompt";
 import { isRTL } from "@/libs/locale";
 import { ColorPicker } from "./color-picker";
+import { defaultHighlightColor, resolveHighlightToolbarState } from "./rich-input.utils";
 
 const defaultTextColor = "rgba(0, 0, 0, 1)";
-const defaultHighlightColor = "rgba(255, 255, 0, 1)";
 
 const extensions = [
 	StarterKit.configure({
@@ -350,12 +350,6 @@ function useEditorToolbarState(editor: Editor) {
 }
 
 type EditorToolbarState = ReturnType<typeof useEditorToolbarState>;
-
-export function resolveHighlightToolbarState(isHighlight: boolean, highlightColor: string | null) {
-	const visibleHighlightColor = highlightColor ?? (isHighlight ? defaultHighlightColor : undefined);
-
-	return { visibleHighlightColor, canClearHighlight: isHighlight };
-}
 
 type EditorToolbarProps = {
 	editor: Editor;

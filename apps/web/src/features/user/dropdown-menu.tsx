@@ -29,6 +29,13 @@ type Props = {
 	children: ({ session }: { session: AuthSession }) => React.ComponentProps<typeof DropdownMenuTrigger>["render"];
 };
 
+const handleLocaleChange = async (value: string) => {
+	if (!isLocale(value)) return;
+	setLocaleCookie(value);
+	await loadLocale(value);
+	window.location.reload();
+};
+
 export function UserDropdownMenu({ children }: Props) {
 	const isClient = useIsClient();
 	const router = useRouter();
@@ -39,13 +46,6 @@ export function UserDropdownMenu({ children }: Props) {
 	const handleThemeChange = (value: string) => {
 		if (!isTheme(value)) return;
 		setTheme(value);
-	};
-
-	const handleLocaleChange = async (value: string) => {
-		if (!isLocale(value)) return;
-		setLocaleCookie(value);
-		await loadLocale(value);
-		window.location.reload();
 	};
 
 	const handleLogout = async () => {

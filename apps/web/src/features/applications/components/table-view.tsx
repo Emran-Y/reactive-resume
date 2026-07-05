@@ -21,6 +21,7 @@ import { getInitials } from "@reactive-resume/utils/string";
 import { cn } from "@reactive-resume/utils/style";
 import { orpc } from "@/libs/orpc/client";
 import { applicationsListQueryKey } from "../queries";
+import { tileColor } from "../tile-color";
 import { ApplicationActionsMenu } from "./application-actions-menu";
 
 const PAGE_SIZE = 25;
@@ -167,7 +168,8 @@ export function ApplicationTable({ applications, onOpen, onEdit }: Props) {
 				</div>
 			)}
 
-			<div className="min-h-0 flex-1 overflow-auto rounded-xl border border-border">
+			{/* Desktop: full table. Mobile: a stacked card list (below) instead of a 900px h-scroll. */}
+			<div className="min-h-0 flex-1 overflow-auto rounded-xl border border-border max-sm:hidden">
 				<table className="w-full min-w-[900px] border-collapse text-sm">
 					<thead className="sticky top-0 z-10 bg-muted/50 backdrop-blur">
 						<tr className="[&>th]:whitespace-nowrap [&>th]:px-3 [&>th]:py-2.5 [&>th]:text-left [&>th]:font-medium [&>th]:text-muted-foreground [&>th]:text-xs [&>th]:uppercase [&>th]:tracking-wide">
@@ -198,9 +200,13 @@ export function ApplicationTable({ applications, onOpen, onEdit }: Props) {
 								<Trans>Source</Trans>
 							</th>
 							<th>
-								<Trans>Last activity</Trans>
+								<Trans>Applied</Trans>
 							</th>
-							<th className="w-10" />
+							<th className="w-10">
+								<span className="sr-only">
+									<Trans>Actions</Trans>
+								</span>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -223,7 +229,12 @@ export function ApplicationTable({ applications, onOpen, onEdit }: Props) {
 									</td>
 									<td className="px-3 py-2">
 										<button type="button" className="flex items-center gap-2.5 text-left" onClick={() => onOpen(app)}>
-											<span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted font-bold text-[10px]">
+											<span
+												className={cn(
+													"flex size-7 shrink-0 items-center justify-center rounded-md font-bold text-[10px] text-white",
+													tileColor(app.company),
+												)}
+											>
 												{getInitials(app.company)}
 											</span>
 											<div className="min-w-0">
@@ -254,7 +265,7 @@ export function ApplicationTable({ applications, onOpen, onEdit }: Props) {
 									</td>
 									<td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{app.source || "—"}</td>
 									<td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
-										{new Date(app.updatedAt).toLocaleDateString()}
+										{new Date(app.appliedAt).toLocaleDateString()}
 									</td>
 									<td className="px-1 py-2">
 										<ApplicationActionsMenu application={app} onEdit={onEdit} />
@@ -264,6 +275,52 @@ export function ApplicationTable({ applications, onOpen, onEdit }: Props) {
 						})}
 					</tbody>
 				</table>
+			</div>
+
+			{/* Mobile: stacked cards (same paginated rows), tap to open. */}
+			<div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto sm:hidden">
+				{rows.map((app) => {
+					const stage = stageOf(app.status);
+					return (
+						<div
+							key={app.id}
+							className={cn(
+								"flex items-center gap-3 rounded-xl border border-border p-3",
+								selected.has(app.id) && "bg-primary/5",
+							)}
+						>
+							<Checkbox
+								checked={selected.has(app.id)}
+								onCheckedChange={() => toggleOne(app.id)}
+								aria-label={t`Select ${app.company}`}
+							/>
+							<button
+								type="button"
+								className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
+								onClick={() => onOpen(app)}
+							>
+								<span
+									className={cn(
+										"flex size-8 shrink-0 items-center justify-center rounded-md font-bold text-[10px] text-white",
+										tileColor(app.company),
+									)}
+								>
+									{getInitials(app.company)}
+								</span>
+								<div className="min-w-0 flex-1">
+									<div className="truncate font-medium text-sm">{app.role}</div>
+									<div className="truncate text-muted-foreground text-xs">{app.company}</div>
+									<div className="mt-1 flex items-center gap-1.5 text-xs">
+										<span className="size-2 shrink-0 rounded-sm" style={{ background: stage?.color }} />
+										<span className="text-muted-foreground">{stage?.label ?? app.status}</span>
+										{app.salary && <span className="truncate font-medium">· {app.salary}</span>}
+									</div>
+								</div>
+							</button>
+							<ApplicationActionsMenu application={app} onEdit={onEdit} />
+						</div>
+					);
+				})}
 			</div>
 
 			<div className="flex items-center gap-3 text-muted-foreground text-sm">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeDelta, getSparklinePoints } from "./statistics";
+import { computeDelta, getSparklinePoints } from "./statistics.utils";
 
 describe("computeDelta", () => {
 	it("returns null when the prior period had no activity", () => {

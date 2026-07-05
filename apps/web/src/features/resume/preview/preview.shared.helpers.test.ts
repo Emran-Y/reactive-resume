@@ -6,7 +6,7 @@ import {
 	getPreviewCanvasScale,
 	getResumePreviewGapValue,
 	getScaledPreviewPageSize,
-} from "./preview.shared";
+} from "./preview.shared.utils";
 
 describe("getScaledPreviewPageSize", () => {
 	it("multiplies both dimensions by the scale", () => {

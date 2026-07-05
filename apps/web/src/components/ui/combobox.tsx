@@ -79,6 +79,19 @@ type MultiComboboxProps<TValue extends string | number = string> = {
 
 type ComboboxProps<TValue extends string | number = string> = SingleComboboxProps<TValue> | MultiComboboxProps<TValue>;
 
+const listContent = <TValue extends string | number>(item: ComboboxOption<TValue>) => (
+	<ComboboxItem key={String(item.value)} value={item} disabled={item.disabled}>
+		{item.label}
+	</ComboboxItem>
+);
+
+const groupedListContent = <TValue extends string | number>(group: GroupedComboboxOption<TValue>) => (
+	<ComboboxGroup key={group.key} items={group.items}>
+		{group.label !== null && group.label !== undefined ? <ComboboxLabel>{group.label}</ComboboxLabel> : null}
+		<ComboboxCollection>{listContent}</ComboboxCollection>
+	</ComboboxGroup>
+);
+
 function Combobox<TValue extends string | number = string>(props: ComboboxProps<TValue>) {
 	const {
 		options,
@@ -202,19 +215,6 @@ function Combobox<TValue extends string | number = string>(props: ComboboxProps<
 	const hasSelectedValue = multiple
 		? Array.isArray(selectedValue) && selectedValue.length > 0
 		: selectedValue !== null && selectedValue !== undefined;
-
-	const listContent = (item: ComboboxOption<TValue>) => (
-		<ComboboxItem key={String(item.value)} value={item} disabled={item.disabled}>
-			{item.label}
-		</ComboboxItem>
-	);
-
-	const groupedListContent = (group: GroupedComboboxOption<TValue>) => (
-		<ComboboxGroup key={group.key} items={group.items}>
-			{group.label !== null && group.label !== undefined ? <ComboboxLabel>{group.label}</ComboboxLabel> : null}
-			<ComboboxCollection>{listContent}</ComboboxCollection>
-		</ComboboxGroup>
-	);
 
 	const triggerNode = (
 		<ComboboxTrigger

@@ -1,6 +1,6 @@
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, RenderTask } from "pdfjs-dist/legacy/build/pdf.mjs";
 import type { ReactNode } from "react";
-import type { PreviewPageSize } from "./preview.shared";
+import type { PreviewPageSize } from "./preview.shared.utils";
 import {
 	AnnotationMode,
 	GlobalWorkerOptions,
@@ -9,7 +9,7 @@ import {
 } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@reactive-resume/utils/style";
-import { DEFAULT_PDF_PAGE_SIZE, getPreviewCanvasScale, getScaledPreviewPageSize } from "./preview.shared";
+import { DEFAULT_PDF_PAGE_SIZE, getPreviewCanvasScale, getScaledPreviewPageSize } from "./preview.shared.utils";
 
 GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.min.mjs", import.meta.url).toString();
 

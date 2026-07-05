@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getNextWeights } from "./combobox";
+import { getNextWeights } from "./get-next-weights";
 
 describe("getNextWeights", () => {
 	it("returns 400 and 600 when both are available (the preferred default)", () => {

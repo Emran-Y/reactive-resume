@@ -4,15 +4,15 @@ import { CommandItem } from "@reactive-resume/ui/components/command";
 import { isLocale, loadLocale, localeMap, setLocaleCookie } from "@/libs/locale";
 import { BaseCommandGroup } from "../base";
 
+const handleLocaleChange = async (value: string) => {
+	if (!value || !isLocale(value)) return;
+	setLocaleCookie(value);
+	await loadLocale(value);
+	window.location.reload();
+};
+
 export function LanguageCommandPage() {
 	const { i18n } = useLingui();
-
-	const handleLocaleChange = async (value: string) => {
-		if (!value || !isLocale(value)) return;
-		setLocaleCookie(value);
-		await loadLocale(value);
-		window.location.reload();
-	};
 
 	return (
 		<BaseCommandGroup page="language" heading={<Trans>Language</Trans>}>
