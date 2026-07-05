@@ -8,7 +8,7 @@ msgstr ""
 "Language: lv\n"
 "Project-Id-Version: reactive-resume\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-04 20:51\n"
+"PO-Revision-Date: 2026-07-05 12:41\n"
 "Last-Translator: \n"
 "Language-Team: Latvian\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2;\n"
@@ -608,6 +608,10 @@ msgstr "Skaistas veidnes, no kurām izvēlēties, un vēl vairāk drīzumā."
 msgid "Bengali"
 msgstr "Bengāļu"
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Best for applications, sharing, and printing."
+msgstr ""
+
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Blank draft"
 msgstr "Tukšs melnraksts"
@@ -776,6 +780,10 @@ msgstr "Izvēlieties CV"
 #: src/routes/agent/index.tsx
 msgid "Choose an existing conversation from the sidebar, or start a new draft-focused thread."
 msgstr "Sānjoslā izvēlieties esošu sarunu vai sāciet jaunu, uz melnrakstu orientētu pavedienu."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
+msgid "Choose PDF, DOCX, or JSON. Export your resume and cover letter separately when available."
+msgstr ""
 
 #: src/components/level/combobox.tsx
 msgid "Circle"
@@ -990,6 +998,7 @@ msgid "Count by source"
 msgstr ""
 
 #: src/features/applications/components/application-detail-sheet.tsx
+#: src/features/resume/export/download-dialog.tsx
 msgid "Cover letter"
 msgstr ""
 
@@ -1353,7 +1362,11 @@ msgid "Donate to Reactive Resume"
 msgstr "Ziedot Reactive Resume"
 
 #. Action button to download two-factor backup codes as a text file
+#. Primary action in the builder header to open resume download options
 #: src/dialogs/auth/enable-two-factor.tsx
+#: src/features/resume/export/download-dialog.tsx
+#: src/routes/builder/$resumeId/-components/header.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Download"
 msgstr "Lejupielādēt"
 
@@ -1361,31 +1374,13 @@ msgstr "Lejupielādēt"
 msgid "Download a copy of all your data, including your profile and every resume, as a JSON file."
 msgstr "Lejupielādējiet visu savu datu kopiju, tostarp savu profilu un katru CV, kā JSON failu."
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume as a Word document. Use this file to further customize your resume in Microsoft Word or Google Docs."
-msgstr "Lejupielādējiet sava CV kopiju kā Word dokumentu. Izmantojiet šo failu, lai tālāk pielāgotu savu CV programmā Microsoft Word vai Google Docs."
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in JSON format. Use this file for backup or to import your resume into other applications, including AI assistants."
-msgstr "Lejupielādējiet sava CV kopiju JSON formātā. Izmantojiet šo failu kā dublējumu vai lai importētu savu CV citās lietotnēs, tostarp MI asistentos."
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in PDF format. Use this file for printing or to easily share your resume with recruiters."
-msgstr "Lejupielādējiet sava CV kopiju PDF formātā. Izmantojiet šo failu drukāšanai vai lai viegli kopīgotu savu CV ar personāla atlases speciālistiem."
-
+#. Primary action in the builder header to open resume download options
 #: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download DOCX"
-msgstr "Lejupielādēt DOCX"
+msgid "Download options"
+msgstr ""
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download JSON"
-msgstr "Lejupielādēt JSON"
-
-#. Primary action in the builder header to download the resume as a PDF
-#. Primary action in the builder header to download the resume as a PDF
 #: src/features/resume/public/public-resume.tsx
 #: src/routes/agent/$threadId.tsx
-#: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Download PDF"
 msgstr "Lejupielādēt PDF"
 
@@ -1484,6 +1479,10 @@ msgstr "Rediģēt informāciju"
 #: src/components/input/chip-input.tsx
 msgid "Edit keyword"
 msgstr "Rediģēt atslēgvārdu"
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Editable in Word, Google Docs, and Pages."
+msgstr ""
 
 #: src/routes/builder/$resumeId/-sidebar/left/index.tsx
 msgid "Editing is disabled until you unlock it."
@@ -1626,6 +1625,10 @@ msgstr "Eksportēt manus datus"
 
 #: src/features/applications/components/insights-view.tsx
 msgid "Export PNG"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Export your resume or cover letter in the format you need."
 msgstr ""
 
 #: src/routes/_home/-sections/features.tsx
@@ -1914,6 +1917,10 @@ msgstr "Franču"
 
 #: src/features/applications/components/application-ai-copilot.tsx
 msgid "From your resume and the posting"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Full resume data for backup or import."
 msgstr ""
 
 #. Layout editor toggle label that makes a page single-column
@@ -2626,10 +2633,6 @@ msgstr "Trūkst darba CV"
 msgid "Model"
 msgstr "Modelis"
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "More download options"
-msgstr "Vairāk lejupielādes opciju"
-
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
 msgid "Move section to another column or page"
 msgstr "Pārvietot sadaļu uz citu kolonnu vai lapu"
@@ -3041,6 +3044,10 @@ msgstr ""
 msgid "Pipeline health for campaign “{campaign}”"
 msgstr ""
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Plain text, ideal for AI tools and quick edits."
+msgstr ""
+
 #: src/features/auth/pages/reset-password.tsx
 msgid "Please enter a new password for your account"
 msgstr "Lūdzu, ievadiet jaunu paroli savam kontam"
@@ -3126,10 +3133,6 @@ msgstr "Priekšskatījums"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/design.tsx
 msgid "Primary Color"
 msgstr "Primārā krāsa"
-
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Print"
-msgstr "Drukāt"
 
 #: src/dialogs/resume/sections/skill.tsx
 msgid "Proficiency"
@@ -3367,6 +3370,7 @@ msgstr "Vai atjaunot CV versiju pirms šī ielāpa? Tādējādi tiks atiestatīt
 msgid "Restore this version?"
 msgstr "Vai atjaunot šo versiju?"
 
+#: src/features/resume/export/download-dialog.tsx
 #: src/routes/agent/$threadId.tsx
 msgid "Resume"
 msgstr "CV"

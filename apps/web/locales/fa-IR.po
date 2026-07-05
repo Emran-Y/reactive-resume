@@ -8,7 +8,7 @@ msgstr ""
 "Language: fa\n"
 "Project-Id-Version: reactive-resume\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-04 20:51\n"
+"PO-Revision-Date: 2026-07-05 12:41\n"
 "Last-Translator: \n"
 "Language-Team: Persian\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -608,6 +608,10 @@ msgstr "قالب‌های زیبایی برای انتخاب، با موارد �
 msgid "Bengali"
 msgstr "بنگالی"
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Best for applications, sharing, and printing."
+msgstr ""
+
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Blank draft"
 msgstr "پیش نویس خالی"
@@ -776,6 +780,10 @@ msgstr "رزومه انتخاب کنید"
 #: src/routes/agent/index.tsx
 msgid "Choose an existing conversation from the sidebar, or start a new draft-focused thread."
 msgstr "یک مکالمه موجود را از نوار کناری انتخاب کنید، یا یک رشته مکالمه جدید با محوریت پیش‌نویس شروع کنید."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
+msgid "Choose PDF, DOCX, or JSON. Export your resume and cover letter separately when available."
+msgstr ""
 
 #: src/components/level/combobox.tsx
 msgid "Circle"
@@ -990,6 +998,7 @@ msgid "Count by source"
 msgstr ""
 
 #: src/features/applications/components/application-detail-sheet.tsx
+#: src/features/resume/export/download-dialog.tsx
 msgid "Cover letter"
 msgstr ""
 
@@ -1353,7 +1362,11 @@ msgid "Donate to Reactive Resume"
 msgstr "به Reactive Resume دونیت کنید"
 
 #. Action button to download two-factor backup codes as a text file
+#. Primary action in the builder header to open resume download options
 #: src/dialogs/auth/enable-two-factor.tsx
+#: src/features/resume/export/download-dialog.tsx
+#: src/routes/builder/$resumeId/-components/header.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Download"
 msgstr "دانلود"
 
@@ -1361,31 +1374,13 @@ msgstr "دانلود"
 msgid "Download a copy of all your data, including your profile and every resume, as a JSON file."
 msgstr "یک کپی از تمام اطلاعات خود، از جمله پروفایل و هر رزومه، را به صورت یک فایل JSON دانلود کنید."
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume as a Word document. Use this file to further customize your resume in Microsoft Word or Google Docs."
-msgstr "یک نسخه از رزومهٔ خود را به صورت یک سند ورد دانلود کنید. از این فایل برای سفارشی‌سازی بیشتر رزومهٔ خود در مایکروسافت ورد یا گوگل داکس استفاده کنید."
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in JSON format. Use this file for backup or to import your resume into other applications, including AI assistants."
-msgstr "یک کپی از رزومه خود را در قالب JSON دانلود کنید. از این فایل برای پشتیبان‌گیری یا وارد کردن رزومه خود به برنامه‌های دیگر، از جمله دستیارهای هوش مصنوعی استفاده کنید."
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in PDF format. Use this file for printing or to easily share your resume with recruiters."
-msgstr "یک کپی از رزومه خود را در قالب PDF دانلود کنید. از این فایل برای چاپ یا اشتراک‌گذاری آسان رزومه با استخدام‌کنندگان استفاده کنید."
-
+#. Primary action in the builder header to open resume download options
 #: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download DOCX"
-msgstr "دانلود DOCX"
+msgid "Download options"
+msgstr ""
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download JSON"
-msgstr "دانلود JSON"
-
-#. Primary action in the builder header to download the resume as a PDF
-#. Primary action in the builder header to download the resume as a PDF
 #: src/features/resume/public/public-resume.tsx
 #: src/routes/agent/$threadId.tsx
-#: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Download PDF"
 msgstr "دانلود PDF"
 
@@ -1484,6 +1479,10 @@ msgstr "جزئیات را ویرایش کنید"
 #: src/components/input/chip-input.tsx
 msgid "Edit keyword"
 msgstr "ویرایش کلمهٔ کلیدی"
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Editable in Word, Google Docs, and Pages."
+msgstr ""
 
 #: src/routes/builder/$resumeId/-sidebar/left/index.tsx
 msgid "Editing is disabled until you unlock it."
@@ -1626,6 +1625,10 @@ msgstr "داده‌های من را صادر کنید"
 
 #: src/features/applications/components/insights-view.tsx
 msgid "Export PNG"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Export your resume or cover letter in the format you need."
 msgstr ""
 
 #: src/routes/_home/-sections/features.tsx
@@ -1914,6 +1917,10 @@ msgstr "فرانسوی"
 
 #: src/features/applications/components/application-ai-copilot.tsx
 msgid "From your resume and the posting"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Full resume data for backup or import."
 msgstr ""
 
 #. Layout editor toggle label that makes a page single-column
@@ -2626,10 +2633,6 @@ msgstr "رزومه کاری موجود نیست"
 msgid "Model"
 msgstr "مدل"
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "More download options"
-msgstr "گزینه‌های بیشتر برای دانلود"
-
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
 msgid "Move section to another column or page"
 msgstr "انتقال بخش به ستون یا صفحه دیگر"
@@ -3041,6 +3044,10 @@ msgstr ""
 msgid "Pipeline health for campaign “{campaign}”"
 msgstr ""
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Plain text, ideal for AI tools and quick edits."
+msgstr ""
+
 #: src/features/auth/pages/reset-password.tsx
 msgid "Please enter a new password for your account"
 msgstr "لطفاً یک گذرواژهٔ جدید برای حساب خود وارد کنید"
@@ -3126,10 +3133,6 @@ msgstr "پیش‌نمایش"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/design.tsx
 msgid "Primary Color"
 msgstr "رنگ اصلی"
-
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Print"
-msgstr "چاپ"
 
 #: src/dialogs/resume/sections/skill.tsx
 msgid "Proficiency"
@@ -3367,6 +3370,7 @@ msgstr "بازگرداندن از سرگیری به قبل از این وصله�
 msgid "Restore this version?"
 msgstr "این نسخه را بازیابی کنید؟"
 
+#: src/features/resume/export/download-dialog.tsx
 #: src/routes/agent/$threadId.tsx
 msgid "Resume"
 msgstr "رزومه"

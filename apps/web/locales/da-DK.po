@@ -8,7 +8,7 @@ msgstr ""
 "Language: da\n"
 "Project-Id-Version: reactive-resume\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-04 20:51\n"
+"PO-Revision-Date: 2026-07-05 12:41\n"
 "Last-Translator: \n"
 "Language-Team: Danish\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -608,6 +608,10 @@ msgstr "Smukke skabeloner at vælge imellem, med flere på vej."
 msgid "Bengali"
 msgstr "Bengali"
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Best for applications, sharing, and printing."
+msgstr "Bedst til applikationer, deling og udskrivning."
+
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Blank draft"
 msgstr "Blankt udkast"
@@ -776,6 +780,10 @@ msgstr "Vælg et CV"
 #: src/routes/agent/index.tsx
 msgid "Choose an existing conversation from the sidebar, or start a new draft-focused thread."
 msgstr "Vælg en eksisterende samtale fra sidebjælken, eller start en ny tråd med fokus på kladder."
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
+msgid "Choose PDF, DOCX, or JSON. Export your resume and cover letter separately when available."
+msgstr "Vælg PDF, DOCX eller JSON. Eksporter dit CV og din ansøgning separat, når det er muligt."
 
 #: src/components/level/combobox.tsx
 msgid "Circle"
@@ -990,8 +998,9 @@ msgid "Count by source"
 msgstr ""
 
 #: src/features/applications/components/application-detail-sheet.tsx
+#: src/features/resume/export/download-dialog.tsx
 msgid "Cover letter"
-msgstr ""
+msgstr "Følgebrev"
 
 #. Fallback title for a custom cover letter item in resume builder when recipient is empty
 #. Fallback title for a custom cover letter item in resume builder when recipient is unavailable
@@ -1353,7 +1362,11 @@ msgid "Donate to Reactive Resume"
 msgstr "Donér til Reactive Resume"
 
 #. Action button to download two-factor backup codes as a text file
+#. Primary action in the builder header to open resume download options
 #: src/dialogs/auth/enable-two-factor.tsx
+#: src/features/resume/export/download-dialog.tsx
+#: src/routes/builder/$resumeId/-components/header.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Download"
 msgstr "Download"
 
@@ -1361,31 +1374,13 @@ msgstr "Download"
 msgid "Download a copy of all your data, including your profile and every resume, as a JSON file."
 msgstr "Download en kopi af alle dine data, inklusive din profil og alle CV'er, som en JSON-fil."
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume as a Word document. Use this file to further customize your resume in Microsoft Word or Google Docs."
-msgstr "Download en kopi af dit CV som et Word-dokument. Brug denne fil til at tilpasse dit CV yderligere i Microsoft Word eller Google Docs."
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in JSON format. Use this file for backup or to import your resume into other applications, including AI assistants."
-msgstr "Download en kopi af dit CV i JSON-format. Brug denne fil til backup eller til at importere dit CV i andre applikationer, inklusive AI-assistenter."
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in PDF format. Use this file for printing or to easily share your resume with recruiters."
-msgstr "Download en kopi af dit CV i PDF-format. Brug denne fil til udskrivning eller til nemt at dele dit CV med rekrutteringskonsulenter."
-
+#. Primary action in the builder header to open resume download options
 #: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download DOCX"
-msgstr "Download DOCX"
+msgid "Download options"
+msgstr ""
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download JSON"
-msgstr "Download JSON"
-
-#. Primary action in the builder header to download the resume as a PDF
-#. Primary action in the builder header to download the resume as a PDF
 #: src/features/resume/public/public-resume.tsx
 #: src/routes/agent/$threadId.tsx
-#: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Download PDF"
 msgstr "Download PDF"
 
@@ -1484,6 +1479,10 @@ msgstr "Rediger detaljer"
 #: src/components/input/chip-input.tsx
 msgid "Edit keyword"
 msgstr "Rediger nøgleord"
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Editable in Word, Google Docs, and Pages."
+msgstr ""
 
 #: src/routes/builder/$resumeId/-sidebar/left/index.tsx
 msgid "Editing is disabled until you unlock it."
@@ -1626,6 +1625,10 @@ msgstr "Eksportér mine data"
 
 #: src/features/applications/components/insights-view.tsx
 msgid "Export PNG"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Export your resume or cover letter in the format you need."
 msgstr ""
 
 #: src/routes/_home/-sections/features.tsx
@@ -1914,6 +1917,10 @@ msgstr "Fransk"
 
 #: src/features/applications/components/application-ai-copilot.tsx
 msgid "From your resume and the posting"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Full resume data for backup or import."
 msgstr ""
 
 #. Layout editor toggle label that makes a page single-column
@@ -2626,10 +2633,6 @@ msgstr "Mangler arbejds-CV"
 msgid "Model"
 msgstr "Model"
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "More download options"
-msgstr "Flere downloadmuligheder"
-
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
 msgid "Move section to another column or page"
 msgstr "Flyt sektion til en anden kolonne eller side"
@@ -3041,6 +3044,10 @@ msgstr ""
 msgid "Pipeline health for campaign “{campaign}”"
 msgstr ""
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Plain text, ideal for AI tools and quick edits."
+msgstr ""
+
 #: src/features/auth/pages/reset-password.tsx
 msgid "Please enter a new password for your account"
 msgstr "Indtast venligst en ny adgangskode til din konto"
@@ -3126,10 +3133,6 @@ msgstr "Forhåndsvisning"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/design.tsx
 msgid "Primary Color"
 msgstr "Primær farve"
-
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Print"
-msgstr "Trykke"
 
 #: src/dialogs/resume/sections/skill.tsx
 msgid "Proficiency"
@@ -3367,6 +3370,7 @@ msgstr "Vil du gendanne cv'et til før denne patch? Dette vil rulle denne patch 
 msgid "Restore this version?"
 msgstr "Gendan denne version?"
 
+#: src/features/resume/export/download-dialog.tsx
 #: src/routes/agent/$threadId.tsx
 msgid "Resume"
 msgstr "Genoptage"

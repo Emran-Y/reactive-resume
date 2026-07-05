@@ -8,7 +8,7 @@ msgstr ""
 "Language: bn\n"
 "Project-Id-Version: reactive-resume\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-04 20:51\n"
+"PO-Revision-Date: 2026-07-05 12:41\n"
 "Last-Translator: \n"
 "Language-Team: Bengali\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -608,6 +608,10 @@ msgstr "পছন্দ করার জন্য সুন্দর সুন�
 msgid "Bengali"
 msgstr "বাংলা"
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Best for applications, sharing, and printing."
+msgstr ""
+
 #: src/routes/agent/-components/new-thread-setup.tsx
 msgid "Blank draft"
 msgstr "খালি খসড়া"
@@ -776,6 +780,10 @@ msgstr "একটি জীবনবৃত্তান্ত বেছে নি
 #: src/routes/agent/index.tsx
 msgid "Choose an existing conversation from the sidebar, or start a new draft-focused thread."
 msgstr "সাইডবার থেকে একটি চলমান আলোচনা বেছে নিন, অথবা খসড়া-কেন্দ্রিক একটি নতুন থ্রেড শুরু করুন।"
+
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
+msgid "Choose PDF, DOCX, or JSON. Export your resume and cover letter separately when available."
+msgstr ""
 
 #: src/components/level/combobox.tsx
 msgid "Circle"
@@ -990,6 +998,7 @@ msgid "Count by source"
 msgstr ""
 
 #: src/features/applications/components/application-detail-sheet.tsx
+#: src/features/resume/export/download-dialog.tsx
 msgid "Cover letter"
 msgstr ""
 
@@ -1353,7 +1362,11 @@ msgid "Donate to Reactive Resume"
 msgstr "Reactive Resume-এ অনুদান দিন"
 
 #. Action button to download two-factor backup codes as a text file
+#. Primary action in the builder header to open resume download options
 #: src/dialogs/auth/enable-two-factor.tsx
+#: src/features/resume/export/download-dialog.tsx
+#: src/routes/builder/$resumeId/-components/header.tsx
+#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
 msgid "Download"
 msgstr "ডাউনলোড"
 
@@ -1361,31 +1374,13 @@ msgstr "ডাউনলোড"
 msgid "Download a copy of all your data, including your profile and every resume, as a JSON file."
 msgstr "আপনার প্রোফাইল এবং প্রতিটি জীবনবৃত্তান্ত সহ আপনার সমস্ত ডেটার একটি কপি JSON ফাইল হিসাবে ডাউনলোড করুন।"
 
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume as a Word document. Use this file to further customize your resume in Microsoft Word or Google Docs."
-msgstr "আপনার রিজুমের একটি কপি Word ডকুমেন্ট হিসেবে ডাউনলোড করুন। Microsoft Word বা Google Docs-এ আপনার রিজুম আরও কাস্টমাইজ করতে এই ফাইলটি ব্যবহার করুন।"
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in JSON format. Use this file for backup or to import your resume into other applications, including AI assistants."
-msgstr "আপনার জীবনবৃত্তান্তের একটি JSON কপি ডাউনলোড করুন। এই ফাইল ব্যাকআপ হিসেবে ব্যবহার করুন বা আপনার জীবনবৃত্তান্তকে অন্যান্য অ্যাপ্লিকেশন, এমনকি এআই সহকারীর মধ্যেও ইমপোর্ট করতে ব্যবহার করুন।"
-
-#: src/routes/builder/$resumeId/-sidebar/right/sections/export.tsx
-msgid "Download a copy of your resume in PDF format. Use this file for printing or to easily share your resume with recruiters."
-msgstr "আপনার জীবনবৃত্তান্তের একটি PDF কপি ডাউনলোড করুন। এই ফাইল ব্যবহার করে প্রিন্ট করুন অথবা নিয়োগকর্তাদের সঙ্গে সহজে শেয়ার করুন।"
-
+#. Primary action in the builder header to open resume download options
 #: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download DOCX"
-msgstr "DOCX ডাউনলোড করুন"
+msgid "Download options"
+msgstr ""
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Download JSON"
-msgstr "JSON ডাউনলোড করুন"
-
-#. Primary action in the builder header to download the resume as a PDF
-#. Primary action in the builder header to download the resume as a PDF
 #: src/features/resume/public/public-resume.tsx
 #: src/routes/agent/$threadId.tsx
-#: src/routes/builder/$resumeId/-components/header.tsx
 msgid "Download PDF"
 msgstr "PDF ডাউনলোড করুন"
 
@@ -1484,6 +1479,10 @@ msgstr "সম্পাদনার বিবরণ"
 #: src/components/input/chip-input.tsx
 msgid "Edit keyword"
 msgstr "সম্পাদনা কীওয়ার্ড"
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Editable in Word, Google Docs, and Pages."
+msgstr ""
 
 #: src/routes/builder/$resumeId/-sidebar/left/index.tsx
 msgid "Editing is disabled until you unlock it."
@@ -1626,6 +1625,10 @@ msgstr "আমার ডেটা রপ্তানি করুন"
 
 #: src/features/applications/components/insights-view.tsx
 msgid "Export PNG"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Export your resume or cover letter in the format you need."
 msgstr ""
 
 #: src/routes/_home/-sections/features.tsx
@@ -1914,6 +1917,10 @@ msgstr "ফরাসি"
 
 #: src/features/applications/components/application-ai-copilot.tsx
 msgid "From your resume and the posting"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Full resume data for backup or import."
 msgstr ""
 
 #. Layout editor toggle label that makes a page single-column
@@ -2626,10 +2633,6 @@ msgstr "কাজের জীবনবৃত্তান্ত অনুপস�
 msgid "Model"
 msgstr "মডেল"
 
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "More download options"
-msgstr "আরও ডাউনলোড বিকল্প"
-
 #: src/routes/builder/$resumeId/-sidebar/right/sections/layout/pages.tsx
 msgid "Move section to another column or page"
 msgstr "বিভাগটিকে অন্য কলাম বা পৃষ্ঠায় সরান"
@@ -3041,6 +3044,10 @@ msgstr ""
 msgid "Pipeline health for campaign “{campaign}”"
 msgstr ""
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Plain text, ideal for AI tools and quick edits."
+msgstr ""
+
 #: src/features/auth/pages/reset-password.tsx
 msgid "Please enter a new password for your account"
 msgstr "অনুগ্রহ করে আপনার অ্যাকাউন্টের জন্য একটি নতুন পাসওয়ার্ড লিখুন"
@@ -3126,10 +3133,6 @@ msgstr "প্রিভিউ"
 #: src/routes/builder/$resumeId/-sidebar/right/sections/design.tsx
 msgid "Primary Color"
 msgstr "প্রাথমিক রঙ"
-
-#: src/routes/builder/$resumeId/-components/header.tsx
-msgid "Print"
-msgstr "প্রিন্ট"
 
 #: src/dialogs/resume/sections/skill.tsx
 msgid "Proficiency"
@@ -3367,6 +3370,7 @@ msgstr "এই প্যাচের আগের অবস্থায় র�
 msgid "Restore this version?"
 msgstr "এই সংস্করণটি পুনরুদ্ধার করবেন?"
 
+#: src/features/resume/export/download-dialog.tsx
 #: src/routes/agent/$threadId.tsx
 msgid "Resume"
 msgstr "জীবনবৃত্তান্ত"
