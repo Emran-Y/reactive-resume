@@ -36,7 +36,7 @@ import {
 import { Slider } from "@reactive-resume/ui/components/slider";
 import "react-easy-crop/react-easy-crop.css";
 import { ColorPicker } from "@/components/input/color-picker";
-import { useCurrentResume, useUpdateResumeData } from "@/features/resume/builder/draft";
+import { useCurrentBuilderResumeSelector, useUpdateResumeData } from "@/features/resume/builder/draft";
 import { useSyncFormValues } from "@/hooks/use-sync-form-values";
 import { getReadableErrorMessage } from "@/libs/error-message";
 import { orpc } from "@/libs/orpc/client";
@@ -447,8 +447,7 @@ function PictureSectionForm() {
 	const [zoom, setZoom] = useState(1);
 	const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-	const resume = useCurrentResume();
-	const picture = resume.data.picture;
+	const picture = useCurrentBuilderResumeSelector((resume) => resume.data.picture);
 	const normalizedPictureUrl = normalizePictureUrl(picture.url, appOrigin);
 	const updateResumeData = useUpdateResumeData();
 

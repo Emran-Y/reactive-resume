@@ -50,7 +50,6 @@ export function ImportApplicationsSheet({ open, onOpenChange }: Props) {
 			onSuccess: (result) => {
 				void queryClient.invalidateQueries({ queryKey: applicationsListQueryKey() });
 				void queryClient.invalidateQueries({ queryKey: orpc.applications.stats.queryKey() });
-				void queryClient.invalidateQueries({ queryKey: orpc.applications.campaigns.queryKey() });
 				void queryClient.invalidateQueries({ queryKey: orpc.applications.tags.queryKey() });
 				toast.success(t`Imported ${result.imported} application(s).`);
 				setText("");
@@ -68,7 +67,7 @@ export function ImportApplicationsSheet({ open, onOpenChange }: Props) {
 
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
-			<SheetContent side="right" className="w-full gap-0 sm:max-w-md">
+			<SheetContent side="right" className="w-full gap-0 data-[side=right]:sm:max-w-lg">
 				<SheetHeader>
 					<SheetTitle>
 						<Trans>Import from CSV</Trans>

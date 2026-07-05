@@ -22,10 +22,14 @@ const applicationSchema = createSelectSchema(schema.application, {
 	jobDescription: z.string().nullable(),
 	matchScore: z.number().int().min(0).max(100).nullable(),
 	aiMetadata: aiMetadataSchema.nullable(),
-	campaign: z.string().trim().nullable(),
 	notes: z.string().nullable(),
 	// Rendered as an <a href>; only same-origin storage URLs are ever stored. Constrain to
 	// http(s)/relative so a hand-crafted `update` can't smuggle a `javascript:` href.
+	resumeFileUrl: z
+		.string()
+		.refine((value) => /^(https?:\/\/|\/)/.test(value), "Resume file URL must be http(s) or a relative path.")
+		.nullable(),
+	resumeFileName: z.string().nullable(),
 	coverLetterUrl: z
 		.string()
 		.refine((value) => /^(https?:\/\/|\/)/.test(value), "Cover letter URL must be http(s) or a relative path.")
@@ -52,8 +56,9 @@ const editableSchema = applicationSchema.pick({
 	source: true,
 	sourceUrl: true,
 	jobDescription: true,
-	campaign: true,
 	notes: true,
+	resumeFileUrl: true,
+	resumeFileName: true,
 	coverLetterUrl: true,
 	coverLetterName: true,
 	followUpAt: true,
@@ -74,7 +79,6 @@ export const applicationDto = {
 		input: z
 			.object({
 				status: applicationStatusSchema.optional(),
-				campaign: z.string().optional(),
 				tags: z.array(z.string()).optional(),
 				includeArchived: z.boolean().optional().default(false),
 			})
@@ -135,18 +139,12 @@ export const applicationDto = {
 	// Aggregates for the Insights view. Everything else (funnel, sankey, tiles) is derived
 	// client-side from these raw counts via computeInsights().
 	stats: {
-		input: z.object({ campaign: z.string().optional() }).optional(),
+		input: z.void(),
 		output: z.object({
 			total: z.number(),
 			byStage: z.array(z.object({ status: applicationStatusSchema, count: z.number() })),
 			bySource: z.array(z.object({ source: z.string(), count: z.number() })),
 		}),
-	},
-
-	// Distinct campaign names for the sidebar/filter (Phase 2 uses the same shape).
-	campaigns: {
-		input: z.void(),
-		output: z.array(z.object({ name: z.string(), count: z.number() })),
 	},
 
 	tags: {

@@ -1,10 +1,9 @@
 import { RichInput } from "@/components/input/rich-input";
-import { useCurrentResume, useUpdateResumeData } from "@/features/resume/builder/draft";
+import { useCurrentBuilderResumeSelector, useUpdateResumeData } from "@/features/resume/builder/draft";
 import { SectionBase } from "../shared/section-base";
 
 export function SummarySectionBuilder() {
-	const resume = useCurrentResume();
-	const section = resume.data.summary;
+	const section = useCurrentBuilderResumeSelector((resume) => resume.data.summary);
 	const updateResumeData = useUpdateResumeData();
 
 	const onChange = (value: string) => {

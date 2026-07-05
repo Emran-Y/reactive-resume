@@ -61,9 +61,15 @@ async function fetchJobPostingText(url: string): Promise<string> {
 	const controller = new AbortController();
 	const timeout = setTimeout(() => controller.abort(), 10_000);
 	try {
+		// Job boards 403 obvious bot user-agents, so present as a normal browser.
 		const response = await fetch(url, {
 			signal: controller.signal,
-			headers: { "user-agent": "ReactiveResumeBot/1.0" },
+			headers: {
+				"user-agent":
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+				accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+				"accept-language": "en-US,en;q=0.9",
+			},
 		});
 		if (!response.ok)
 			throw new ORPCError("BAD_REQUEST", { message: `Couldn't fetch the posting (HTTP ${response.status}).` });

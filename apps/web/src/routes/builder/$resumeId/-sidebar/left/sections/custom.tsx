@@ -32,7 +32,7 @@ import {
 import { stripHtml } from "@reactive-resume/utils/string";
 import { cn } from "@reactive-resume/utils/style";
 import { useDialogStore } from "@/dialogs/store";
-import { useCurrentResume, useUpdateResumeData } from "@/features/resume/builder/draft";
+import { useCurrentBuilderResumeSelector, useUpdateResumeData } from "@/features/resume/builder/draft";
 import { useConfirm } from "@/hooks/use-confirm";
 import { getSectionTitle } from "@/libs/resume/section";
 import { SectionBase } from "../shared/section-base";
@@ -122,8 +122,7 @@ function getItemSubtitle(type: CustomSectionType, item: CustomSectionItemType): 
 }
 
 export function CustomSectionBuilder() {
-	const resume = useCurrentResume();
-	const customSections = resume.data.customSections;
+	const customSections = useCurrentBuilderResumeSelector((resume) => resume.data.customSections);
 
 	return (
 		<SectionBase type="custom" className={cn("space-y-4", customSections.length === 0 && "border-dashed")}>

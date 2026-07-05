@@ -7,6 +7,7 @@ import {
 	BriefcaseIcon,
 	ChartBarIcon,
 	DownloadSimpleIcon,
+	FunnelIcon,
 	KanbanIcon,
 	MagnifyingGlassIcon,
 	PlusIcon,
@@ -19,6 +20,7 @@ import z from "zod";
 import { Button } from "@reactive-resume/ui/components/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@reactive-resume/ui/components/input-group";
 import { Label } from "@reactive-resume/ui/components/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@reactive-resume/ui/components/popover";
 import { Separator } from "@reactive-resume/ui/components/separator";
 import { Tabs, TabsList, TabsTrigger } from "@reactive-resume/ui/components/tabs";
 import { Combobox } from "@/components/ui/combobox";
@@ -32,15 +34,24 @@ import { applicationsListQueryOptions } from "@/features/applications/queries";
 import { orpc } from "@/libs/orpc/client";
 import { DashboardHeader } from "../-components/header";
 
+const SORT_OPTIONS = [
+	{ value: "updated", label: msg`Last updated` },
+	{ value: "applied", label: msg`Date applied` },
+	{ value: "company", label: msg`Company A–Z` },
+	{ value: "role", label: msg`Role A–Z` },
+] as const;
+
+type SortKey = (typeof SORT_OPTIONS)[number]["value"];
+
 const searchSchema = z.object({
 	search: z.string().default(""),
 	view: z.enum(["board", "table", "insights"]).default("board"),
 	tags: z.array(z.string()).default([]),
-	campaign: z.string().default(""),
+	sort: z.enum(["updated", "applied", "company", "role"]).default("updated"),
 	archived: z.boolean().default(false),
 });
 type Search = z.output<typeof searchSchema>;
-const defaultSearch: Search = { search: "", view: "board", tags: [], campaign: "", archived: false };
+const defaultSearch: Search = { search: "", view: "board", tags: [], sort: "updated", archived: false };
 
 export const Route = createFileRoute("/dashboard/applications/")({
 	component: RouteComponent,
@@ -50,7 +61,7 @@ export const Route = createFileRoute("/dashboard/applications/")({
 
 function RouteComponent() {
 	const { i18n } = useLingui();
-	const { search, view, tags, campaign, archived } = Route.useSearch();
+	const { search, view, tags, sort, archived } = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
 	const [addOpen, setAddOpen] = useState(false);
@@ -66,17 +77,23 @@ function RouteComponent() {
 
 	const { data: applications } = useQuery(applicationsListQueryOptions());
 	const { data: allTags } = useQuery(orpc.applications.tags.queryOptions());
-	const { data: campaigns } = useQuery(orpc.applications.campaigns.queryOptions());
 
-	// Board & table hide archived; campaign/tag/search filters are applied client-side.
+	// Board & table hide archived; tag/search filters + sort are applied client-side.
 	const filtered = useMemo(() => {
 		const query = search.trim().toLowerCase();
-		return (applications ?? [])
+		const rows = (applications ?? [])
 			.filter((app) => archived || !app.archived)
-			.filter((app) => !campaign || app.campaign === campaign)
 			.filter((app) => tags.length === 0 || tags.every((tag: string) => app.tags.includes(tag)))
 			.filter((app) => !query || app.company.toLowerCase().includes(query) || app.role.toLowerCase().includes(query));
-	}, [applications, search, campaign, tags, archived]);
+
+		const compare: Record<SortKey, (a: Application, b: Application) => number> = {
+			updated: (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+			applied: (a, b) => new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime(),
+			company: (a, b) => a.company.localeCompare(b.company),
+			role: (a, b) => a.role.localeCompare(b.role),
+		};
+		return rows.sort(compare[sort as SortKey]);
+	}, [applications, search, tags, sort, archived]);
 
 	const archivedCount = (applications ?? []).filter((app) => app.archived).length;
 
@@ -111,8 +128,9 @@ function RouteComponent() {
 				<EmptyState onAdd={() => setAddOpen(true)} onImport={() => setImportOpen(true)} />
 			) : (
 				<>
-					<div className="flex flex-wrap items-center gap-3">
-						<InputGroup className="w-full sm:w-56">
+					{/* One row: search grows, filters stay fixed, icon-only view switcher on the right. */}
+					<div className="flex items-center gap-2">
+						<InputGroup className="min-w-24 max-w-72 flex-1">
 							<InputGroupAddon align="inline-start">
 								<MagnifyingGlassIcon />
 							</InputGroupAddon>
@@ -123,30 +141,25 @@ function RouteComponent() {
 							/>
 						</InputGroup>
 
-						{(campaigns?.length ?? 0) > 0 && (
-							<div className="flex items-center gap-2">
-								<Label className="text-muted-foreground text-xs">
-									<Trans>Campaign</Trans>
-								</Label>
-								<Combobox
-									className="w-44"
-									value={campaign || null}
-									showClear
-									placeholder={t`All`}
-									options={(campaigns ?? []).map((c) => ({ value: c.name, label: `${c.name} (${c.count})` }))}
-									onValueChange={(value) => setSearch({ campaign: value ?? "" })}
-								/>
-							</div>
-						)}
-
+						{/* Desktop: filters inline. Mobile: collapsed into the Filters popover below. */}
 						{(allTags?.length ?? 0) > 0 && (
 							<Combobox
 								multiple
-								className="w-44"
+								className="w-40 min-w-0 shrink max-sm:hidden"
 								value={tags}
-								placeholder={t`Filter tags`}
+								placeholder={t`Filter by tags`}
 								options={(allTags ?? []).map((tag) => ({ value: tag, label: tag }))}
 								onValueChange={(value) => setSearch({ tags: value ?? [] })}
+							/>
+						)}
+
+						{view !== "insights" && (
+							<Combobox
+								className="w-40 min-w-0 shrink max-sm:hidden"
+								value={sort}
+								placeholder={t`Sort by…`}
+								options={SORT_OPTIONS.map((option) => ({ value: option.value, label: i18n.t(option.label) }))}
+								onValueChange={(value) => value && setSearch({ sort: value as SortKey })}
 							/>
 						)}
 
@@ -154,6 +167,7 @@ function RouteComponent() {
 							<Button
 								size="sm"
 								variant={archived ? "secondary" : "outline"}
+								className="shrink-0 max-sm:hidden"
 								onClick={() => setSearch({ archived: !archived })}
 							>
 								<ArchiveIcon />
@@ -161,31 +175,89 @@ function RouteComponent() {
 							</Button>
 						)}
 
-						<Tabs className="ms-auto" value={view}>
+						{/* Mobile-only: one button holds every filter so the row never overflows on a phone. */}
+						{view !== "insights" && (
+							<Popover>
+								<PopoverTrigger
+									render={
+										<Button size="icon-sm" variant="outline" className="relative shrink-0 sm:hidden">
+											<FunnelIcon />
+											{(tags.length > 0 || archived) && (
+												<span className="absolute end-1 top-1 size-1.5 rounded-full bg-primary" />
+											)}
+										</Button>
+									}
+								/>
+								<PopoverContent align="end" className="w-64 p-3">
+									{(allTags?.length ?? 0) > 0 && (
+										<div className="space-y-1.5">
+											<Label className="text-muted-foreground text-xs">
+												<Trans>Filter by tags</Trans>
+											</Label>
+											<Combobox
+												multiple
+												className="w-full"
+												value={tags}
+												placeholder={t`Any tag`}
+												options={(allTags ?? []).map((tag) => ({ value: tag, label: tag }))}
+												onValueChange={(value) => setSearch({ tags: value ?? [] })}
+											/>
+										</div>
+									)}
+									<div className="space-y-1.5">
+										<Label className="text-muted-foreground text-xs">
+											<Trans>Sort by</Trans>
+										</Label>
+										<Combobox
+											className="w-full"
+											value={sort}
+											options={SORT_OPTIONS.map((option) => ({ value: option.value, label: i18n.t(option.label) }))}
+											onValueChange={(value) => value && setSearch({ sort: value as SortKey })}
+										/>
+									</div>
+									{archivedCount > 0 && (
+										<Button
+											size="sm"
+											variant={archived ? "secondary" : "outline"}
+											className="w-full"
+											onClick={() => setSearch({ archived: !archived })}
+										>
+											<ArchiveIcon />
+											<Trans>Archived</Trans> ({archivedCount})
+										</Button>
+									)}
+								</PopoverContent>
+							</Popover>
+						)}
+
+						<Tabs className="ms-auto shrink-0" value={view}>
 							<TabsList>
 								<TabsTrigger
 									value="board"
+									title={i18n.t(msg`Board`)}
 									nativeButton={false}
 									render={<Link to="." search={(p: Search) => ({ ...p, view: "board" })} />}
 								>
 									<KanbanIcon />
-									<span className="max-sm:sr-only">{i18n.t(msg`Board`)}</span>
+									<span className="sr-only">{i18n.t(msg`Board`)}</span>
 								</TabsTrigger>
 								<TabsTrigger
 									value="table"
+									title={i18n.t(msg`Table`)}
 									nativeButton={false}
 									render={<Link to="." search={(p: Search) => ({ ...p, view: "table" })} />}
 								>
 									<RowsIcon />
-									<span className="max-sm:sr-only">{i18n.t(msg`Table`)}</span>
+									<span className="sr-only">{i18n.t(msg`Table`)}</span>
 								</TabsTrigger>
 								<TabsTrigger
 									value="insights"
+									title={i18n.t(msg`Insights`)}
 									nativeButton={false}
 									render={<Link to="." search={(p: Search) => ({ ...p, view: "insights" })} />}
 								>
 									<ChartBarIcon />
-									<span className="max-sm:sr-only">{i18n.t(msg`Insights`)}</span>
+									<span className="sr-only">{i18n.t(msg`Insights`)}</span>
 								</TabsTrigger>
 							</TabsList>
 						</Tabs>
@@ -200,7 +272,7 @@ function RouteComponent() {
 								<Button
 									size="sm"
 									variant="outline"
-									onClick={() => setSearch({ search: "", tags: [], campaign: "", archived: false })}
+									onClick={() => setSearch({ search: "", tags: [], archived: false })}
 								>
 									<Trans>Clear filters</Trans>
 								</Button>
@@ -213,7 +285,7 @@ function RouteComponent() {
 								{view === "table" && (
 									<ApplicationTable applications={filtered} onOpen={setSelected} onEdit={setEditing} />
 								)}
-								{view === "insights" && <ApplicationInsights campaign={campaign || undefined} />}
+								{view === "insights" && <ApplicationInsights applications={applications ?? []} />}
 							</>
 						)}
 					</div>

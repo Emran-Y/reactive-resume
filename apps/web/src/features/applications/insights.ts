@@ -54,3 +54,30 @@ export function computeInsights(byStage: StageCount[]): Insights {
 
 	return { total, tiles, funnel, rejected };
 }
+
+export type TimelineBucket = { label: string; count: number };
+
+// Bucket application dates into the last `weeks` calendar weeks (Sunday-started) so the Insights
+// view can show application velocity over time — a dimension the funnel/tiles don't capture.
+export function computeTimeline(dates: Date[], weeks = 8): TimelineBucket[] {
+	const msWeek = 7 * 86_400_000;
+	const startOfWeek = new Date();
+	startOfWeek.setHours(0, 0, 0, 0);
+	startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+	const buckets = Array.from({ length: weeks }, (_, i) => {
+		const start = new Date(startOfWeek.getTime() - (weeks - 1 - i) * msWeek);
+		return { start: start.getTime(), label: `${start.getMonth() + 1}/${start.getDate()}`, count: 0 };
+	});
+
+	const first = buckets[0]?.start ?? 0;
+	for (const date of dates) {
+		const time = date.getTime();
+		if (time < first) continue;
+		const index = Math.min(weeks - 1, Math.floor((time - first) / msWeek));
+		const bucket = buckets[index];
+		if (bucket) bucket.count++;
+	}
+
+	return buckets.map(({ label, count }) => ({ label, count }));
+}

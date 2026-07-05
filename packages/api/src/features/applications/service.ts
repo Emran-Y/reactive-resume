@@ -24,8 +24,9 @@ type EditableFields = {
 	source?: string | null | undefined;
 	sourceUrl?: string | null | undefined;
 	jobDescription?: string | null | undefined;
-	campaign?: string | null | undefined;
 	notes?: string | null | undefined;
+	resumeFileUrl?: string | null | undefined;
+	resumeFileName?: string | null | undefined;
 	coverLetterUrl?: string | null | undefined;
 	coverLetterName?: string | null | undefined;
 	followUpAt?: Date | null | undefined;
@@ -51,13 +52,7 @@ const stripUserId = <T extends { userId: string }>(row: T) => {
 };
 
 export const applicationService = {
-	list: async (input: {
-		userId: string;
-		status?: ApplicationStatus;
-		campaign?: string;
-		tags?: string[];
-		includeArchived?: boolean;
-	}) => {
+	list: async (input: { userId: string; status?: ApplicationStatus; tags?: string[]; includeArchived?: boolean }) => {
 		const rows = await db
 			.select()
 			.from(schema.application)
@@ -65,7 +60,6 @@ export const applicationService = {
 				and(
 					eq(schema.application.userId, input.userId),
 					input.status ? eq(schema.application.status, input.status) : undefined,
-					input.campaign ? eq(schema.application.campaign, input.campaign) : undefined,
 					input.tags && input.tags.length > 0 ? arrayContains(schema.application.tags, input.tags) : undefined,
 				),
 			)
@@ -241,12 +235,8 @@ export const applicationService = {
 	},
 
 	// Raw counts for Insights; funnel/sankey/tiles are derived client-side from these.
-	stats: async (input: { userId: string; campaign?: string }) => {
-		const scope = and(
-			eq(schema.application.userId, input.userId),
-			eq(schema.application.archived, false),
-			input.campaign ? eq(schema.application.campaign, input.campaign) : undefined,
-		);
+	stats: async (input: { userId: string }) => {
+		const scope = and(eq(schema.application.userId, input.userId), eq(schema.application.archived, false));
 
 		const byStage = await db
 			.select({ status: schema.application.status, count: sql<number>`count(*)::int` })
@@ -269,16 +259,6 @@ export const applicationService = {
 				.filter((row): row is { source: string; count: number } => !!row.source)
 				.sort((a, b) => b.count - a.count),
 		};
-	},
-
-	campaigns: async (input: { userId: string }) => {
-		const rows = await db
-			.select({ name: schema.application.campaign, count: sql<number>`count(*)::int` })
-			.from(schema.application)
-			.where(and(eq(schema.application.userId, input.userId), eq(schema.application.archived, false)))
-			.groupBy(schema.application.campaign);
-
-		return rows.filter((row): row is { name: string; count: number } => !!row.name).sort((a, b) => b.count - a.count);
 	},
 
 	listTags: async (input: { userId: string }) => {

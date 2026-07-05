@@ -12,7 +12,6 @@ export const applicationsRouter = {
 	bulkUpdate: crudRouter.bulkUpdate,
 	bulkDelete: crudRouter.bulkDelete,
 	stats: crudRouter.stats,
-	campaigns: crudRouter.campaigns,
 	tags: crudRouter.tags,
 	ai: aiRouter,
 };

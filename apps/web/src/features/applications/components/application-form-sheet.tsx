@@ -1,8 +1,9 @@
 import type { ApplicationStatus } from "@reactive-resume/schema/applications/data";
 import type { Application } from "../types";
+import type { FileAttachment } from "./file-attachment-field";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { SparkleIcon } from "@phosphor-icons/react";
+import { SparkleIcon, XIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,11 +23,10 @@ import { Textarea } from "@reactive-resume/ui/components/textarea";
 import { Combobox } from "@/components/ui/combobox";
 import { orpc } from "@/libs/orpc/client";
 import { applicationsListQueryKey } from "../queries";
+import { FileAttachmentField } from "./file-attachment-field";
 
-const SOURCE_OPTIONS = ["LinkedIn", "Indeed", "Company website", "Referral", "Recruiter", "Other"].map((s) => ({
-	value: s,
-	label: s,
-}));
+// Preset source suggestions surfaced via a <datalist>; the field itself stays free-text.
+const SOURCE_OPTIONS = ["LinkedIn", "Indeed", "Company Website", "Referral", "Recruiter", "Other"];
 
 const EMPTY = {
 	company: "",
@@ -36,15 +36,20 @@ const EMPTY = {
 	source: "",
 	status: "saved" as ApplicationStatus,
 	resumeId: "",
-	campaign: "",
+	tags: [] as string[],
 	sourceUrl: "",
 	jobDescription: "",
 	followUpAt: "",
 	followUpNote: "",
 	notes: "",
+	resumeFile: null as FileAttachment | null,
+	coverLetter: null as FileAttachment | null,
 };
 
 type FormState = typeof EMPTY;
+
+const toAttachment = (url: string | null, name: string | null): FileAttachment | null =>
+	url ? { url, name: name ?? url } : null;
 
 function toForm(app: Application): FormState {
 	return {
@@ -55,12 +60,14 @@ function toForm(app: Application): FormState {
 		source: app.source ?? "",
 		status: app.status,
 		resumeId: app.resumeId ?? "",
-		campaign: app.campaign ?? "",
+		tags: app.tags,
 		sourceUrl: app.sourceUrl ?? "",
 		jobDescription: app.jobDescription ?? "",
 		followUpAt: app.followUpAt ? new Date(app.followUpAt).toISOString().slice(0, 10) : "",
 		followUpNote: app.followUpNote ?? "",
 		notes: app.notes ?? "",
+		resumeFile: toAttachment(app.resumeFileUrl, app.resumeFileName),
+		coverLetter: toAttachment(app.coverLetterUrl, app.coverLetterName),
 	};
 }
 
@@ -87,7 +94,7 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 	const { data: resumes } = useQuery(orpc.resume.list.queryOptions());
 	const resumeOptions = (resumes ?? []).map((resume) => ({ value: resume.id, label: resume.name }));
 
-	const { data: campaigns } = useQuery(orpc.applications.campaigns.queryOptions());
+	const { data: allTags } = useQuery(orpc.applications.tags.queryOptions());
 
 	const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
 		setForm((prev) => ({ ...prev, [key]: value }));
@@ -95,7 +102,7 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 	const invalidate = () => {
 		void queryClient.invalidateQueries({ queryKey: applicationsListQueryKey() });
 		void queryClient.invalidateQueries({ queryKey: orpc.applications.stats.queryKey() });
-		void queryClient.invalidateQueries({ queryKey: orpc.applications.campaigns.queryKey() });
+		void queryClient.invalidateQueries({ queryKey: orpc.applications.tags.queryKey() });
 		if (application) {
 			void queryClient.invalidateQueries({
 				queryKey: orpc.applications.getById.queryKey({ input: { id: application.id } }),
@@ -153,14 +160,18 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 			status: form.status,
 			location: form.location.trim() || null,
 			salary: form.salary.trim() || null,
-			source: form.source || null,
+			source: form.source.trim() || null,
 			resumeId: form.resumeId || null,
-			campaign: form.campaign.trim() || null,
+			tags: form.tags,
 			sourceUrl: form.sourceUrl.trim() || null,
 			jobDescription: form.jobDescription.trim() || null,
 			notes: form.notes.trim() || null,
 			followUpNote: form.followUpNote.trim() || null,
 			followUpAt: form.followUpAt ? new Date(form.followUpAt) : null,
+			resumeFileUrl: form.resumeFile?.url ?? null,
+			resumeFileName: form.resumeFile?.name ?? null,
+			coverLetterUrl: form.coverLetter?.url ?? null,
+			coverLetterName: form.coverLetter?.name ?? null,
 		};
 		if (application) update.mutate({ id: application.id, ...payload });
 		else create.mutate(payload);
@@ -168,7 +179,7 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
-			<SheetContent side="right" className="w-full gap-0 sm:max-w-md">
+			<SheetContent side="right" className="w-full gap-0 data-[side=right]:sm:max-w-lg">
 				<SheetHeader>
 					<SheetTitle>{isEditing ? <Trans>Edit application</Trans> : <Trans>Add application</Trans>}</SheetTitle>
 					<SheetDescription>
@@ -180,7 +191,7 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 					</SheetDescription>
 				</SheetHeader>
 
-				<div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 pb-4">
+				<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-4 [&>*]:shrink-0">
 					{/* AI job-posting autofill: extracts the fields below from a posting URL. */}
 					{!isEditing && (
 						<div className="rounded-lg border border-border border-dashed p-3">
@@ -218,7 +229,17 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 
 					<div className="grid grid-cols-2 gap-3">
 						<Field label={t`Location`}>
-							<Input value={form.location} onChange={(event) => set("location", event.target.value)} />
+							<Input
+								value={form.location}
+								list="application-locations"
+								placeholder={t`Remote, Hybrid, a city…`}
+								onChange={(event) => set("location", event.target.value)}
+							/>
+							<datalist id="application-locations">
+								<option value="Remote" />
+								<option value="Hybrid" />
+								<option value="In-office" />
+							</datalist>
 						</Field>
 						<Field label={t`Salary range`}>
 							<Input value={form.salary} onChange={(event) => set("salary", event.target.value)} />
@@ -227,13 +248,17 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 
 					<div className="grid grid-cols-2 gap-3">
 						<Field label={t`Source`}>
-							<Combobox
-								className="w-full"
-								value={form.source || null}
-								options={SOURCE_OPTIONS}
-								placeholder={t`Select…`}
-								onValueChange={(value) => set("source", value ?? "")}
+							<Input
+								value={form.source}
+								list="application-sources"
+								placeholder={t`LinkedIn, Referral…`}
+								onChange={(event) => set("source", event.target.value)}
 							/>
+							<datalist id="application-sources">
+								{SOURCE_OPTIONS.map((option) => (
+									<option key={option} value={option} />
+								))}
+							</datalist>
 						</Field>
 						<Field label={t`Stage`}>
 							<Combobox
@@ -245,30 +270,39 @@ export function ApplicationFormSheet({ open, onOpenChange, application }: Props)
 						</Field>
 					</div>
 
-					<Field label={t`Resume used`}>
-						<Combobox
-							className="w-full"
-							value={form.resumeId || null}
-							options={resumeOptions}
-							placeholder={t`Link a Reactive Resume…`}
-							showClear
-							emptyMessage={t`No resumes yet.`}
-							onValueChange={(value) => set("resumeId", value ?? "")}
+					{/* Resume: link a live Reactive Resume (unlocks AI) or upload the exact PDF you sent. */}
+					<Field label={t`Resume`}>
+						<div className="flex flex-col gap-2">
+							<Combobox
+								className="w-full"
+								value={form.resumeId || null}
+								options={resumeOptions}
+								placeholder={t`Link a Reactive Resume (recommended)`}
+								showClear
+								emptyMessage={t`No resumes yet.`}
+								onValueChange={(value) => set("resumeId", value ?? "")}
+							/>
+							<FileAttachmentField
+								value={form.resumeFile}
+								attachLabel={t`Or upload a resume PDF`}
+								onChange={(value) => set("resumeFile", value)}
+							/>
+							<p className="text-[11px] text-muted-foreground">
+								<Trans>Linking a Reactive Resume enables AI match scoring and tailoring.</Trans>
+							</p>
+						</div>
+					</Field>
+
+					<Field label={t`Cover letter`}>
+						<FileAttachmentField
+							value={form.coverLetter}
+							attachLabel={t`Attach a cover letter (PDF)`}
+							onChange={(value) => set("coverLetter", value)}
 						/>
 					</Field>
 
-					<Field label={t`Campaign`}>
-						<Input
-							value={form.campaign}
-							list="application-campaigns"
-							placeholder={t`e.g. Spring 2026 · New Grad`}
-							onChange={(event) => set("campaign", event.target.value)}
-						/>
-						<datalist id="application-campaigns">
-							{(campaigns ?? []).map((campaign) => (
-								<option key={campaign.name} value={campaign.name} />
-							))}
-						</datalist>
+					<Field label={t`Tags`}>
+						<TagsField value={form.tags} suggestions={allTags ?? []} onChange={(tags) => set("tags", tags)} />
 					</Field>
 
 					<div className="grid grid-cols-2 gap-3">
@@ -320,6 +354,70 @@ function Field({ label, required, children }: { label: string; required?: boolea
 				{required && <span className="text-destructive"> *</span>}
 			</Label>
 			{children}
+		</div>
+	);
+}
+
+type TagsFieldProps = {
+	value: string[];
+	suggestions: string[];
+	onChange: (tags: string[]) => void;
+};
+
+// Type-and-Enter tag input with chips + an autocomplete datalist of the user's existing tags.
+function TagsField({ value, suggestions, onChange }: TagsFieldProps) {
+	const [draft, setDraft] = useState("");
+
+	const add = () => {
+		const tag = draft.trim();
+		if (!tag || value.includes(tag)) {
+			setDraft("");
+			return;
+		}
+		onChange([...value, tag]);
+		setDraft("");
+	};
+
+	return (
+		<div className="flex flex-col gap-2">
+			<Input
+				value={draft}
+				list="application-tags"
+				placeholder={t`Add a tag and press Enter…`}
+				onChange={(event) => setDraft(event.target.value)}
+				onKeyDown={(event) => {
+					if (event.key === "Enter") {
+						event.preventDefault();
+						add();
+					}
+				}}
+				onBlur={add}
+			/>
+			<datalist id="application-tags">
+				{suggestions.map((tag) => (
+					<option key={tag} value={tag} />
+				))}
+			</datalist>
+			{value.length > 0 && (
+				<div className="flex flex-wrap gap-1.5">
+					{value.map((tag) => (
+						<span
+							key={tag}
+							className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-muted-foreground text-xs"
+						>
+							{tag}
+							<button
+								type="button"
+								title={t`Remove tag`}
+								className="hover:text-destructive"
+								onClick={() => onChange(value.filter((t) => t !== tag))}
+							>
+								<XIcon className="size-3" />
+							</button>
+						</span>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

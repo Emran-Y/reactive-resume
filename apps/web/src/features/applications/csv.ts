@@ -59,7 +59,6 @@ export type ParsedApplication = {
 	location?: string;
 	salary?: string;
 	source?: string;
-	campaign?: string;
 	notes?: string;
 	sourceUrl?: string;
 	tags?: string[];
@@ -81,7 +80,6 @@ const HEADER_ALIASES: Record<string, keyof ParsedApplication> = {
 	"salary range": "salary",
 	compensation: "salary",
 	source: "source",
-	campaign: "campaign",
 	notes: "notes",
 	note: "notes",
 	url: "sourceUrl",

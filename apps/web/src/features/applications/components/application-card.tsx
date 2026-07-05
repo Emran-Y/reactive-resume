@@ -3,26 +3,8 @@ import { Trans } from "@lingui/react/macro";
 import { FileTextIcon, MapPinIcon } from "@phosphor-icons/react";
 import { getInitials } from "@reactive-resume/utils/string";
 import { cn } from "@reactive-resume/utils/style";
+import { tileColor } from "../tile-color";
 import { ApplicationActionsMenu } from "./application-actions-menu";
-
-// Deterministic accent color for a company's logo tile (design shows colored initials tiles).
-const TILE_COLORS = [
-	"bg-rose-500",
-	"bg-orange-500",
-	"bg-amber-500",
-	"bg-emerald-500",
-	"bg-teal-500",
-	"bg-sky-500",
-	"bg-indigo-500",
-	"bg-violet-500",
-	"bg-fuchsia-500",
-];
-
-function tileColor(seed: string) {
-	let hash = 0;
-	for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) | 0;
-	return TILE_COLORS[Math.abs(hash) % TILE_COLORS.length];
-}
 
 type Props = {
 	application: Application;

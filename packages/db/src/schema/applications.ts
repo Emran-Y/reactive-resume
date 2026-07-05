@@ -35,9 +35,11 @@ export const application = pg.pgTable(
 		jobDescription: pg.text("job_description"),
 		matchScore: pg.integer("match_score"),
 		aiMetadata: pg.jsonb("ai_metadata").$type<AiMetadata>(),
-		// Reserves the deferred campaigns feature; no management UI this pass.
-		campaign: pg.text("campaign"),
 		notes: pg.text("notes"),
+		// An uploaded resume file (PDF) sent with this application, distinct from the live
+		// resumeId link. Stored as the storage URL + original filename for display.
+		resumeFileUrl: pg.text("resume_file_url"),
+		resumeFileName: pg.text("resume_file_name"),
 		// A cover letter sent with this application (PDF/doc uploaded to storage). Stored as the
 		// key returned by the storage upload plus the original filename for display.
 		coverLetterUrl: pg.text("cover_letter_url"),

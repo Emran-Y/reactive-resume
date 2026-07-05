@@ -4,13 +4,12 @@ import { plural } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { AnimatePresence, Reorder } from "motion/react";
 import { cn } from "@reactive-resume/utils/style";
-import { useCurrentResume, useUpdateResumeData } from "@/features/resume/builder/draft";
+import { useCurrentBuilderResumeSelector, useUpdateResumeData } from "@/features/resume/builder/draft";
 import { SectionBase } from "../shared/section-base";
 import { SectionAddItemButton, SectionItem } from "../shared/section-item";
 
 export function ExperienceSectionBuilder() {
-	const resume = useCurrentResume();
-	const section = resume.data.sections.experience;
+	const section = useCurrentBuilderResumeSelector((resume) => resume.data.sections.experience);
 	const updateResumeData = useUpdateResumeData();
 
 	const handleReorder = (items: z.infer<typeof experienceItemSchema>[]) => {

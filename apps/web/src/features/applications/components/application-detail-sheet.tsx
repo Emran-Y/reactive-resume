@@ -5,26 +5,26 @@ import { Trans } from "@lingui/react/macro";
 import {
 	ArrowRightIcon,
 	ArrowSquareOutIcon,
-	FilePdfIcon,
 	PencilSimpleIcon,
 	PlusIcon,
 	TrashIcon,
-	UploadSimpleIcon,
 	XCircleIcon,
 	XIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { STAGES } from "@reactive-resume/schema/applications/data";
 import { Button } from "@reactive-resume/ui/components/button";
 import { Input } from "@reactive-resume/ui/components/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@reactive-resume/ui/components/sheet";
 import { cn } from "@reactive-resume/utils/style";
+import { useConfirm } from "@/hooks/use-confirm";
 import { orpc } from "@/libs/orpc/client";
 import { applicationsListQueryKey } from "../queries";
 import { ApplicationAiCopilot } from "./application-ai-copilot";
+import { FileAttachmentField } from "./file-attachment-field";
 
 const stageIndex = (status: ApplicationStatus) => STAGES.findIndex((s) => s.value === status);
 
@@ -36,6 +36,7 @@ type Props = {
 
 export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Props) {
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
 	const [note, setNote] = useState("");
 	const id = application?.id;
 
@@ -58,7 +59,6 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 	const invalidate = () => {
 		void queryClient.invalidateQueries({ queryKey: applicationsListQueryKey() });
 		void queryClient.invalidateQueries({ queryKey: orpc.applications.stats.queryKey() });
-		void queryClient.invalidateQueries({ queryKey: orpc.applications.campaigns.queryKey() });
 		if (id) void queryClient.invalidateQueries({ queryKey: orpc.applications.getById.queryKey({ input: { id } }) });
 	};
 
@@ -90,37 +90,6 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 		}),
 	);
 
-	const fileInputRef = useRef<HTMLInputElement>(null);
-	const uploadCoverLetter = useMutation(orpc.storage.uploadFile.mutationOptions({ meta: { noInvalidate: true } }));
-	const deleteFile = useMutation(orpc.storage.deleteFile.mutationOptions({ meta: { noInvalidate: true } }));
-
-	const onSelectCoverLetter = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0];
-		if (!file || !current) return;
-		if (file.type !== "application/pdf") {
-			toast.error(t`Please upload a PDF file.`);
-			return;
-		}
-		const toastId = toast.loading(t`Uploading cover letter…`);
-		uploadCoverLetter.mutate(file, {
-			onSuccess: ({ url }) => {
-				toast.dismiss(toastId);
-				update.mutate({ id: current.id, coverLetterUrl: url, coverLetterName: file.name });
-				if (fileInputRef.current) fileInputRef.current.value = "";
-			},
-			onError: () => toast.error(t`Couldn't upload the file. Please try again.`, { id: toastId }),
-		});
-	};
-
-	const removeCoverLetter = () => {
-		if (!current?.coverLetterUrl) return;
-		// Best-effort delete of the stored file; the storage route defaults a bare filename to the
-		// user's upload dir. Clear the fields regardless so the UI reflects the removal.
-		const filename = new URL(current.coverLetterUrl, window.location.origin).pathname.split("/").pop();
-		if (filename) deleteFile.mutate({ filename });
-		update.mutate({ id: current.id, coverLetterUrl: null, coverLetterName: null });
-	};
-
 	if (!current) return null;
 
 	const idx = stageIndex(current.status);
@@ -128,7 +97,7 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 
 	return (
 		<Sheet open={!!application} onOpenChange={onOpenChange}>
-			<SheetContent side="right" className="w-full gap-0 sm:max-w-md">
+			<SheetContent side="right" className="w-full gap-0 data-[side=right]:sm:max-w-lg">
 				<SheetHeader className="gap-3">
 					<div className="flex items-start justify-between gap-2 pe-8">
 						<div className="min-w-0">
@@ -171,13 +140,12 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 					</div>
 				</SheetHeader>
 
-				<div className="flex flex-1 flex-col gap-5 overflow-y-auto px-4 py-4">
+				<div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-4 py-4 [&>*]:shrink-0">
 					{/* key facts */}
 					<dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
 						<Fact label={t`Salary`} value={current.salary} />
 						<Fact label={t`Source`} value={current.source} />
 						<Fact label={t`Applied on`} value={new Date(current.appliedAt).toLocaleDateString()} />
-						<Fact label={t`Campaign`} value={current.campaign} />
 					</dl>
 
 					{current.sourceUrl && (
@@ -214,47 +182,43 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 							</p>
 						)}
 
-						{current.coverLetterUrl ? (
-							<div className="flex items-center gap-3 rounded-lg border border-border p-2.5">
-								<span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
-									<FilePdfIcon />
-								</span>
-								<a
-									href={current.coverLetterUrl}
-									target="_blank"
-									rel="noreferrer"
-									className="min-w-0 flex-1 truncate text-sm hover:underline"
-								>
-									{current.coverLetterName || t`Cover letter`}
-								</a>
-								<button
-									type="button"
-									title={t`Remove cover letter`}
-									className="text-muted-foreground hover:text-destructive"
-									onClick={removeCoverLetter}
-								>
-									<XIcon />
-								</button>
-							</div>
-						) : (
-							<button
-								type="button"
-								disabled={uploadCoverLetter.isPending}
-								onClick={() => fileInputRef.current?.click()}
-								className="flex w-full items-center gap-2 rounded-lg border border-border border-dashed p-2.5 text-muted-foreground text-sm hover:bg-muted/50 disabled:opacity-60"
-							>
-								<UploadSimpleIcon />
-								{uploadCoverLetter.isPending ? <Trans>Uploading…</Trans> : <Trans>Attach a cover letter (PDF)</Trans>}
-							</button>
-						)}
-						<input
-							ref={fileInputRef}
-							type="file"
-							accept="application/pdf"
-							className="hidden"
-							onChange={onSelectCoverLetter}
+						<FileAttachmentField
+							value={
+								current.resumeFileUrl
+									? { url: current.resumeFileUrl, name: current.resumeFileName || t`Resume file` }
+									: null
+							}
+							attachLabel={t`Attach a resume file (PDF)`}
+							disabled={update.isPending}
+							onChange={(value) =>
+								update.mutate({
+									id: current.id,
+									resumeFileUrl: value?.url ?? null,
+									resumeFileName: value?.name ?? null,
+								})
+							}
+						/>
+
+						<FileAttachmentField
+							value={
+								current.coverLetterUrl
+									? { url: current.coverLetterUrl, name: current.coverLetterName || t`Cover letter` }
+									: null
+							}
+							attachLabel={t`Attach a cover letter (PDF)`}
+							disabled={update.isPending}
+							onChange={(value) =>
+								update.mutate({
+									id: current.id,
+									coverLetterUrl: value?.url ?? null,
+									coverLetterName: value?.name ?? null,
+								})
+							}
 						/>
 					</Section>
+
+					{/* AI copilot — placed high so it's discoverable without scrolling past the timeline */}
+					<ApplicationAiCopilot application={current} />
 
 					{/* contacts */}
 					<Section title={t`Contacts`}>
@@ -310,8 +274,6 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 							</Button>
 						</div>
 					</Section>
-
-					<ApplicationAiCopilot application={current} />
 				</div>
 
 				<div className="flex items-center gap-1 border-border border-t p-4">
@@ -338,7 +300,13 @@ export function ApplicationDetailSheet({ application, onOpenChange, onEdit }: Pr
 						variant="ghost"
 						className="ms-auto text-destructive"
 						disabled={remove.isPending}
-						onClick={() => remove.mutate({ id: current.id })}
+						onClick={async () => {
+							const confirmed = await confirm(t`Delete this application?`, {
+								description: t`"${current.role} · ${current.company}" and its full timeline will be permanently deleted. This can't be undone.`,
+								confirmText: t`Delete`,
+							});
+							if (confirmed) remove.mutate({ id: current.id });
+						}}
 					>
 						<TrashIcon />
 						<Trans>Delete</Trans>

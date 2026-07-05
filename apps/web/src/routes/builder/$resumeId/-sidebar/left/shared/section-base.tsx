@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@r
 import { Button } from "@reactive-resume/ui/components/button";
 import { cn } from "@reactive-resume/utils/style";
 import { IconPicker } from "@/components/input/icon-picker";
-import { useCurrentResume, useUpdateResumeData } from "@/features/resume/builder/draft";
+import { useCurrentBuilderResumeSelector, useUpdateResumeData } from "@/features/resume/builder/draft";
 import { getSectionIcon, getSectionTitle } from "@/libs/resume/section";
 import { useSectionStore } from "../../../-store/section";
 import { SectionDropdownMenu } from "./section-menu";
@@ -17,11 +17,13 @@ type Props = React.ComponentProps<typeof AccordionContent> & {
 };
 
 export function SectionBase({ type, className, ...props }: Props) {
-	const resume = useCurrentResume();
 	const updateResumeData = useUpdateResumeData();
-	const data = resume.data;
-	const section =
-		type === "basics"
+	// Subscribe to only this section's slice, not the whole resume. Otherwise editing any field
+	// (which replaces the resume reference) re-renders all ~15 section wrappers on every keystroke.
+	// Immer keeps untouched slices reference-stable, so Zustand bails out of the unrelated sections.
+	const section = useCurrentBuilderResumeSelector((resume) => {
+		const data = resume.data;
+		return type === "basics"
 			? data.basics
 			: type === "summary"
 				? data.summary
@@ -30,6 +32,7 @@ export function SectionBase({ type, className, ...props }: Props) {
 					: type === "custom"
 						? data.customSections
 						: data.sections[type];
+	});
 
 	const isHidden = "hidden" in section && section.hidden;
 	const hasSectionIcon = !["picture", "basics", "custom"].includes(type);

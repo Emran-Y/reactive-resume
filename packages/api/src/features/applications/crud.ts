@@ -21,7 +21,6 @@ export const crudRouter = {
 			return applicationService.list({
 				userId: context.user.id,
 				...(input.status ? { status: input.status } : {}),
-				...(input.campaign ? { campaign: input.campaign } : {}),
 				...(input.tags ? { tags: input.tags } : {}),
 				includeArchived: input.includeArchived,
 			});
@@ -174,32 +173,13 @@ export const crudRouter = {
 			tags: ["Applications"],
 			operationId: "getApplicationStats",
 			summary: "Application pipeline stats",
-			description:
-				"Returns aggregate counts (per stage, per source) for the Insights view. Optionally scoped to a campaign. Requires authentication.",
+			description: "Returns aggregate counts (per stage, per source) for the Insights view. Requires authentication.",
 			successDescription: "Aggregate application counts.",
 		})
 		.input(applicationDto.stats.input)
 		.output(applicationDto.stats.output)
-		.handler(async ({ input, context }) => {
-			return applicationService.stats({
-				userId: context.user.id,
-				...(input?.campaign ? { campaign: input.campaign } : {}),
-			});
-		}),
-
-	campaigns: protectedProcedure
-		.route({
-			method: "GET",
-			path: "/applications/campaigns",
-			tags: ["Applications"],
-			operationId: "listApplicationCampaigns",
-			summary: "List campaigns",
-			description: "Returns distinct campaign names with their application counts. Requires authentication.",
-			successDescription: "Distinct campaigns with counts.",
-		})
-		.output(applicationDto.campaigns.output)
 		.handler(async ({ context }) => {
-			return applicationService.campaigns({ userId: context.user.id });
+			return applicationService.stats({ userId: context.user.id });
 		}),
 
 	tags: protectedProcedure

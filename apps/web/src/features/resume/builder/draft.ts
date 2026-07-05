@@ -199,7 +199,12 @@ async function flushResumeSave(id: string) {
 
 		if (currentDataStillMatchesSubmission && !runtime.pendingResume) {
 			runtime.hasPendingLocalChanges = false;
-			useResumeStore.getState().replaceResumeFromServer(updated);
+			// The local data still equals what we just saved, so the client already holds the canonical
+			// data — only server-owned metadata (updatedAt, etc.) can differ. Merge just that instead of
+			// replacing the whole resume: a full replace swaps every nested reference (the server strips
+			// `undefined`s, so an equality check on its echo can't even confirm they match), which fires
+			// every `data` selector and remounts the entire builder tree on each save-after-typing.
+			useResumeStore.getState().mergeResumeMetadata(updated);
 			useResumeStore.getState().setSaveStatus("saved");
 		} else {
 			runtime.hasPendingLocalChanges = true;
