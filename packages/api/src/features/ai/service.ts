@@ -2,12 +2,22 @@ import type { AIProvider } from "@reactive-resume/ai/types";
 import type { ResumeAnalysis } from "@reactive-resume/schema/resume/analysis";
 import type { ResumeData } from "@reactive-resume/schema/resume/data";
 import type { ModelMessage, UIMessage } from "ai";
+import { inflateRawSync } from "node:zlib";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createCerebras } from "@ai-sdk/cerebras";
+import { createCohere } from "@ai-sdk/cohere";
+import { createDeepSeek } from "@ai-sdk/deepseek";
+import { createFireworks } from "@ai-sdk/fireworks";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createGroq } from "@ai-sdk/groq";
+import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createPerplexity } from "@ai-sdk/perplexity";
+import { createTogetherAI } from "@ai-sdk/togetherai";
+import { createXai } from "@ai-sdk/xai";
 import { streamToEventIterator } from "@orpc/server";
-import { convertToModelMessages, createGateway, generateText, Output, stepCountIs, streamText, tool } from "ai";
+import { convertToModelMessages, createGateway, generateText, stepCountIs, streamText, tool } from "ai";
 import { createOllama } from "ollama-ai-provider-v2";
 import { match } from "ts-pattern";
 import { z } from "zod";
@@ -72,6 +82,13 @@ type GetModelInput = {
 
 const MAX_AI_FILE_BYTES = 10 * 1024 * 1024; // 10MB
 const MAX_AI_FILE_BASE64_CHARS = Math.ceil((MAX_AI_FILE_BYTES * 4) / 3) + 4;
+const TEST_CONNECTION_MAX_OUTPUT_TOKENS = 128;
+const DOCX_DOCUMENT_XML_PATH = "word/document.xml";
+const ZIP_LOCAL_FILE_HEADER_SIGNATURE = 0x04034b50;
+const ZIP_CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
+const ZIP_END_OF_CENTRAL_DIRECTORY_SIGNATURE = 0x06054b50;
+const ZIP_STORED_METHOD = 0;
+const ZIP_DEFLATED_METHOD = 8;
 
 export function getModel(input: GetModelInput) {
 	const { provider, model, apiKey } = input;
@@ -83,6 +100,15 @@ export function getModel(input: GetModelInput) {
 		.with("gemini", () => createGoogleGenerativeAI({ apiKey, baseURL }).languageModel(model))
 		.with("vercel-ai-gateway", () => createGateway({ apiKey, baseURL }).languageModel(model))
 		.with("openrouter", () => createOpenAICompatible({ name: "openrouter", apiKey, baseURL }).languageModel(model))
+		.with("mistral", () => createMistral({ apiKey, baseURL }).languageModel(model))
+		.with("cohere", () => createCohere({ apiKey, baseURL }).languageModel(model))
+		.with("xai", () => createXai({ apiKey, baseURL }).languageModel(model))
+		.with("groq", () => createGroq({ apiKey, baseURL }).languageModel(model))
+		.with("deepseek", () => createDeepSeek({ apiKey, baseURL }).languageModel(model))
+		.with("togetherai", () => createTogetherAI({ apiKey, baseURL }).languageModel(model))
+		.with("fireworks", () => createFireworks({ apiKey, baseURL }).languageModel(model))
+		.with("cerebras", () => createCerebras({ apiKey, baseURL }).languageModel(model))
+		.with("perplexity", () => createPerplexity({ apiKey, baseURL }).languageModel(model))
 		.with("openai-compatible", () =>
 			createOpenAICompatible({ name: "openai-compatible", apiKey, baseURL }).languageModel(model),
 		)
@@ -123,11 +149,15 @@ export async function testConnection(input: TestConnectionInput): Promise<boolea
 
 	const result = await generateText({
 		model: getModel(input),
-		output: Output.choice({ options: [RESPONSE_OK] }),
-		messages: [{ role: "user", content: `Respond only with JSON Object: { "result": "${RESPONSE_OK}" }` }],
+		maxOutputTokens: TEST_CONNECTION_MAX_OUTPUT_TOKENS,
+		temperature: 0,
+		messages: [{ role: "user", content: `Respond only with the single character: ${RESPONSE_OK}` }],
 	});
 
-	return result.output === RESPONSE_OK;
+	if (result.text.trim() === RESPONSE_OK) return true;
+	if (result.finishReason === "length") throw new Error("The model returned too much text during the provider test.");
+
+	return false;
 }
 
 type ParsePdfInput = z.infer<typeof aiCredentialsSchema> & {
@@ -156,6 +186,20 @@ function buildResumeParsingMessages({ userPrompt, file, mediaType }: BuildResume
 	];
 }
 
+function buildResumeParsingTextMessages({ userPrompt, text }: { userPrompt: string; text: string }): ModelMessage[] {
+	return [
+		{
+			role: "user",
+			content: [
+				{
+					type: "text",
+					text: `${userPrompt}\n\nThe Microsoft Word file has been converted to plain text below.\n\n${text}`,
+				},
+			],
+		},
+	];
+}
+
 async function parsePdf(input: ParsePdfInput): Promise<ResumeData> {
 	const model = getModel(input);
 
@@ -177,17 +221,117 @@ type ParseDocxInput = z.infer<typeof aiCredentialsSchema> & {
 	mediaType: "application/msword" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 };
 
+function assertZipRange(buffer: Buffer, offset: number, length: number) {
+	if (offset < 0 || length < 0 || offset + length > buffer.length) throw new Error("Invalid DOCX archive.");
+}
+
+function findEndOfCentralDirectory(buffer: Buffer): number {
+	const minOffset = Math.max(0, buffer.length - 0xffff - 22);
+
+	for (let offset = buffer.length - 22; offset >= minOffset; offset--) {
+		if (buffer.readUInt32LE(offset) === ZIP_END_OF_CENTRAL_DIRECTORY_SIGNATURE) return offset;
+	}
+
+	throw new Error("Invalid DOCX archive.");
+}
+
+function readZipEntry(buffer: Buffer, entryName: string): Buffer {
+	const eocdOffset = findEndOfCentralDirectory(buffer);
+	assertZipRange(buffer, eocdOffset, 22);
+
+	const centralDirectorySize = buffer.readUInt32LE(eocdOffset + 12);
+	const centralDirectoryOffset = buffer.readUInt32LE(eocdOffset + 16);
+	assertZipRange(buffer, centralDirectoryOffset, centralDirectorySize);
+
+	let offset = centralDirectoryOffset;
+	const endOffset = centralDirectoryOffset + centralDirectorySize;
+
+	while (offset < endOffset) {
+		assertZipRange(buffer, offset, 46);
+		if (buffer.readUInt32LE(offset) !== ZIP_CENTRAL_DIRECTORY_SIGNATURE) throw new Error("Invalid DOCX archive.");
+
+		const compressionMethod = buffer.readUInt16LE(offset + 10);
+		const compressedSize = buffer.readUInt32LE(offset + 20);
+		const fileNameLength = buffer.readUInt16LE(offset + 28);
+		const extraFieldLength = buffer.readUInt16LE(offset + 30);
+		const commentLength = buffer.readUInt16LE(offset + 32);
+		const localHeaderOffset = buffer.readUInt32LE(offset + 42);
+		const fileNameOffset = offset + 46;
+		assertZipRange(buffer, fileNameOffset, fileNameLength);
+
+		const fileName = buffer.toString("utf8", fileNameOffset, fileNameOffset + fileNameLength);
+
+		if (fileName === entryName) {
+			assertZipRange(buffer, localHeaderOffset, 30);
+			if (buffer.readUInt32LE(localHeaderOffset) !== ZIP_LOCAL_FILE_HEADER_SIGNATURE) {
+				throw new Error("Invalid DOCX archive.");
+			}
+
+			const localFileNameLength = buffer.readUInt16LE(localHeaderOffset + 26);
+			const localExtraFieldLength = buffer.readUInt16LE(localHeaderOffset + 28);
+			const dataOffset = localHeaderOffset + 30 + localFileNameLength + localExtraFieldLength;
+			assertZipRange(buffer, dataOffset, compressedSize);
+
+			const compressed = buffer.subarray(dataOffset, dataOffset + compressedSize);
+			if (compressionMethod === ZIP_STORED_METHOD) return compressed;
+			if (compressionMethod === ZIP_DEFLATED_METHOD) return inflateRawSync(compressed);
+
+			throw new Error("Unsupported DOCX archive compression.");
+		}
+
+		offset = fileNameOffset + fileNameLength + extraFieldLength + commentLength;
+	}
+
+	throw new Error("DOCX document content not found.");
+}
+
+function decodeXmlEntities(value: string): string {
+	return value.replace(/&(#x[\da-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (entity, token: string) => {
+		if (token === "amp") return "&";
+		if (token === "lt") return "<";
+		if (token === "gt") return ">";
+		if (token === "quot") return '"';
+		if (token === "apos") return "'";
+		if (token.toLowerCase().startsWith("#x")) return String.fromCodePoint(Number.parseInt(token.slice(2), 16));
+		if (token.startsWith("#")) return String.fromCodePoint(Number.parseInt(token.slice(1), 10));
+		return entity;
+	});
+}
+
+function extractDocxText(file: z.infer<typeof fileInputSchema>): string {
+	const documentXml = readZipEntry(Buffer.from(file.data, "base64"), DOCX_DOCUMENT_XML_PATH).toString("utf8");
+	// ponytail: minimal OOXML body-text extraction; add a DOCX parser dependency if tracked changes matter.
+	const text = decodeXmlEntities(
+		documentXml
+			.replace(/<w:tab\b[^>]*\/>/g, "\t")
+			.replace(/<w:br\b[^>]*\/>/g, "\n")
+			.replace(/<\/w:p>/g, "\n")
+			.replace(/<[^>]+>/g, ""),
+	)
+		.replace(/\r/g, "")
+		.replace(/[ \t]+\n/g, "\n")
+		.replace(/\n{3,}/g, "\n\n")
+		.trim();
+
+	if (!text) throw new Error("DOCX document content is empty.");
+	return text;
+}
+
 async function parseDocx(input: ParseDocxInput): Promise<ResumeData> {
 	const model = getModel(input);
+	const messages =
+		input.mediaType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+			? buildResumeParsingTextMessages({ userPrompt: docxParserUserPrompt, text: extractDocxText(input.file) })
+			: buildResumeParsingMessages({
+					userPrompt: docxParserUserPrompt,
+					file: input.file,
+					mediaType: input.mediaType,
+				});
 
 	const result = await generateText({
 		model,
 		system: buildResumeParsingSystemPrompt(docxParserSystemPrompt),
-		messages: buildResumeParsingMessages({
-			userPrompt: docxParserUserPrompt,
-			file: input.file,
-			mediaType: input.mediaType,
-		}),
+		messages,
 	}).catch((error: unknown) => logAndRethrow("Failed to generate the text with the model", error));
 
 	return parseAndValidateResumeJson(result.text);

@@ -8,7 +8,7 @@ msgstr ""
 "Language: ms\n"
 "Project-Id-Version: reactive-resume\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-07 15:03\n"
+"PO-Revision-Date: 2026-07-08 16:53\n"
 "Last-Translator: \n"
 "Language-Team: Malay\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -758,6 +758,10 @@ msgstr "Catalan"
 msgid "Center Align"
 msgstr "Jajaran Tengah"
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Cerebras"
+msgstr "Serebrum"
+
 #: src/dialogs/resume/sections/custom.tsx
 #: src/libs/resume/section-title.ts
 #: src/libs/resume/section.tsx
@@ -853,6 +857,10 @@ msgstr "Klik di sini untuk memilih fail untuk diimport"
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Close AI assistant"
 msgstr "Tutup pembantu AI"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Cohere"
+msgstr "Bersatu padu"
 
 #: src/routes/builder/$resumeId/-sidebar/left/sections/custom.tsx
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-menu.tsx
@@ -1281,6 +1289,10 @@ msgstr "Kurangkan inden"
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Decrease zoom"
 msgstr "Kurangkan zum"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "DeepSeek"
+msgstr "DeepSeek"
 
 #: src/dialogs/resume/sections/education.tsx
 msgid "Degree"
@@ -1885,6 +1897,10 @@ msgstr "Cari poin yang lemah dan tulis semula dengan hasil, nombor, skop dan kat
 msgid "Finnish"
 msgstr "Finland"
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Fireworks"
+msgstr "Bunga api"
+
 #: src/routes/builder/$resumeId/-components/dock.tsx
 msgid "Fit to view"
 msgstr "Sesuai untuk dilihat"
@@ -2071,6 +2087,10 @@ msgstr "Greek"
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Grid"
 msgstr "Grid"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Groq"
+msgstr "Groq"
 
 #: src/routes/_home/-sections/donate.tsx
 msgid "Grow the Team"
@@ -2270,6 +2290,10 @@ msgstr "Mengimport resume anda..."
 #: src/dialogs/resume/import.tsx
 msgid "Importing…"
 msgstr "Mengimport…"
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Include resume header"
+msgstr "Sertakan pengepala resume"
 
 #: src/components/input/rich-input.tsx
 msgid "Increase indent"
@@ -2574,11 +2598,6 @@ msgstr "Senarai"
 msgid "Lithuanian"
 msgstr "Lithuania"
 
-#. placeholder {0}: metadata.name
-#: src/routes/builder/$resumeId/-sidebar/right/sections/template.tsx
-msgid "Live preview of your resume in the {0} template"
-msgstr "Pratonton langsung resume anda dalam templat {0}"
-
 #: src/dialogs/resume/import.tsx
 msgid "Loading AI providers. Please try again in a moment."
 msgstr "Memuatkan penyedia AI. Sila cuba lagi sebentar lagi."
@@ -2697,6 +2716,10 @@ msgstr "Microsoft Word"
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Missing working resume"
 msgstr "Resume kerja yang hilang"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Mistral AI"
+msgstr "Mistral AI"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Model"
@@ -2871,8 +2894,8 @@ msgid "Odia"
 msgstr "Odia"
 
 #: src/features/settings/integrations/components/ai-section.tsx
-msgid "Ollama"
-msgstr "Ollama"
+msgid "Ollama Cloud"
+msgstr "Awan Ollama"
 
 #: src/routes/_home/-sections/features.tsx
 msgid "One-Click Sign-In"
@@ -3090,6 +3113,10 @@ msgstr "PDF"
 #: src/dialogs/resume/sections/volunteer.tsx
 msgid "Period"
 msgstr "Tempoh"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Perplexity"
+msgstr "Kekeliruan"
 
 #: src/libs/locale.ts
 msgid "Persian"
@@ -3838,6 +3865,10 @@ msgstr "Tunjukkan kata laluan"
 msgid "Show picture"
 msgstr "Tunjukkan gambar"
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Show the same first-page header on the cover letter."
+msgstr "Tunjukkan pengepala halaman pertama yang sama pada surat iringan."
+
 #. placeholder {0}: rows.length
 #. placeholder {1}: applications.length
 #: src/features/applications/components/table-view.tsx
@@ -4407,6 +4438,10 @@ msgstr "Tajuk"
 msgid "To delete your account, you need to enter the confirmation text and click the button below."
 msgstr "Untuk memadam akaun anda, anda perlu memasukkan teks pengesahan dan klik butang di bawah."
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Together.ai"
+msgstr "Bersama.ai"
+
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-base.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/shared/section-base.tsx
 msgid "Toggle {sectionTitle} section"
@@ -4860,6 +4895,10 @@ msgstr "Berbaloi"
 #: src/routes/_home/-sections/footer.tsx
 msgid "X (Twitter)"
 msgstr "X (Twitter)"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "xAI Grok"
+msgstr "xAI Grok"
 
 #: src/routes/_home/-sections/faq.tsx
 msgid "Yes, Reactive Resume is available in multiple languages. You can choose your preferred language in the settings page, or using the language switcher in the top right corner. If you don't see your language, or you would like to improve the existing translations, you can <0>contribute to the translations on Crowdin<1> (opens in new tab)</1></0>."

@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 
+import { readFileSync } from "node:fs";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { i18n } from "@lingui/core";
@@ -63,5 +64,12 @@ describe("TemplateSectionBuilder", () => {
 		renderTemplate();
 		const img = screen.getByAltText("Ditto") as HTMLImageElement;
 		expect(img.src).toContain("/templates/jpg/ditto.jpg");
+	});
+
+	it("keeps the template preview inline instead of mounting a hover card", () => {
+		const source = readFileSync("src/routes/builder/$resumeId/-sidebar/right/sections/template.tsx", "utf8");
+
+		expect(source).not.toContain("@reactive-resume/ui/components/hover-card");
+		expect(source).not.toContain("HoverCardContent");
 	});
 });

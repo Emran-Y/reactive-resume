@@ -8,7 +8,7 @@ msgstr ""
 "Language: ja\n"
 "Project-Id-Version: reactive-resume\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-07-07 15:03\n"
+"PO-Revision-Date: 2026-07-08 16:53\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -758,6 +758,10 @@ msgstr "カタロニア語"
 msgid "Center Align"
 msgstr "中央揃え"
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Cerebras"
+msgstr "脳"
+
 #: src/dialogs/resume/sections/custom.tsx
 #: src/libs/resume/section-title.ts
 #: src/libs/resume/section.tsx
@@ -853,6 +857,10 @@ msgstr "ここをクリックしてインポートするファイルを選択"
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Close AI assistant"
 msgstr "AIアシスタントを閉じる"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Cohere"
+msgstr "調和する"
 
 #: src/routes/builder/$resumeId/-sidebar/left/sections/custom.tsx
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-menu.tsx
@@ -1281,6 +1289,10 @@ msgstr "インデントを減らす"
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Decrease zoom"
 msgstr "ズームを縮小する"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "DeepSeek"
+msgstr "ディープシーク"
 
 #: src/dialogs/resume/sections/education.tsx
 msgid "Degree"
@@ -1885,6 +1897,10 @@ msgstr "弱い箇条書きを見つけ出し、より力強い成果、数値、
 msgid "Finnish"
 msgstr "フィンランド語"
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Fireworks"
+msgstr "花火"
+
 #: src/routes/builder/$resumeId/-components/dock.tsx
 msgid "Fit to view"
 msgstr "見るのにふさわしい"
@@ -2071,6 +2087,10 @@ msgstr "ギリシャ語"
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Grid"
 msgstr "グリッド表示"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Groq"
+msgstr "グロク"
 
 #: src/routes/_home/-sections/donate.tsx
 msgid "Grow the Team"
@@ -2270,6 +2290,10 @@ msgstr "レジュメをインポートしています…"
 #: src/dialogs/resume/import.tsx
 msgid "Importing…"
 msgstr "… をインポートしています"
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Include resume header"
+msgstr "履歴書のヘッダーを含める"
 
 #: src/components/input/rich-input.tsx
 msgid "Increase indent"
@@ -2574,11 +2598,6 @@ msgstr "一覧"
 msgid "Lithuanian"
 msgstr "リトアニア語"
 
-#. placeholder {0}: metadata.name
-#: src/routes/builder/$resumeId/-sidebar/right/sections/template.tsx
-msgid "Live preview of your resume in the {0} template"
-msgstr "{0} テンプレートでの履歴書のライブプレビュー"
-
 #: src/dialogs/resume/import.tsx
 msgid "Loading AI providers. Please try again in a moment."
 msgstr "AIプロバイダーを読み込んでいます。しばらくしてからもう一度お試しください。"
@@ -2697,6 +2716,10 @@ msgstr "Microsoft Word"
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Missing working resume"
 msgstr "レジュメが選択されていません"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Mistral AI"
+msgstr "ミストラルAI"
 
 #: src/features/settings/integrations/components/ai-section.tsx
 msgid "Model"
@@ -2871,8 +2894,8 @@ msgid "Odia"
 msgstr "オディア語"
 
 #: src/features/settings/integrations/components/ai-section.tsx
-msgid "Ollama"
-msgstr "Orlama"
+msgid "Ollama Cloud"
+msgstr "オラマ・クラウド"
 
 #: src/routes/_home/-sections/features.tsx
 msgid "One-Click Sign-In"
@@ -3090,6 +3113,10 @@ msgstr "PDF"
 #: src/dialogs/resume/sections/volunteer.tsx
 msgid "Period"
 msgstr "期間"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Perplexity"
+msgstr "困惑"
 
 #: src/libs/locale.ts
 msgid "Persian"
@@ -3838,6 +3865,10 @@ msgstr "パスワードを表示する"
 msgid "Show picture"
 msgstr "画像を表示"
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Show the same first-page header on the cover letter."
+msgstr "カバーレターにも1ページ目と同じヘッダーを表示します。"
+
 #. placeholder {0}: rows.length
 #. placeholder {1}: applications.length
 #: src/features/applications/components/table-view.tsx
@@ -4407,6 +4438,10 @@ msgstr "タイトル"
 msgid "To delete your account, you need to enter the confirmation text and click the button below."
 msgstr "アカウントを削除するには、確認用のテキストを入力し、下のボタンをクリックしてください。"
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Together.ai"
+msgstr "一緒に。"
+
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-base.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/shared/section-base.tsx
 msgid "Toggle {sectionTitle} section"
@@ -4860,6 +4895,10 @@ msgstr "試す価値あり"
 #: src/routes/_home/-sections/footer.tsx
 msgid "X (Twitter)"
 msgstr "X（ツイッター）"
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "xAI Grok"
+msgstr "xAI Grok"
 
 #: src/routes/_home/-sections/faq.tsx
 msgid "Yes, Reactive Resume is available in multiple languages. You can choose your preferred language in the settings page, or using the language switcher in the top right corner. If you don't see your language, or you would like to improve the existing translations, you can <0>contribute to the translations on Crowdin<1> (opens in new tab)</1></0>."

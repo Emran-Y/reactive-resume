@@ -26,6 +26,13 @@ describe("shouldShowResumeHeader", () => {
 		expect(shouldShowResumeHeader(createCoverLetterOnlyData(), 0)).toBe(false);
 	});
 
+	it("can keep the first-page header for cover letter documents", () => {
+		const data = { ...createCoverLetterOnlyData(), renderOptions: { includeCoverLetterHeader: true } };
+
+		expect(shouldShowResumeHeader(data, 0)).toBe(true);
+		expect(shouldShowResumeHeader(data, 1)).toBe(false);
+	});
+
 	it("keeps the first-page header for normal resume documents", () => {
 		expect(shouldShowResumeHeader(sampleResumeData, 0)).toBe(true);
 		expect(shouldShowResumeHeader(sampleResumeData, 1)).toBe(false);

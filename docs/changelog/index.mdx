@@ -4,6 +4,43 @@ description: "Release notes for Reactive Resume covering new features, resume bu
 rss: true
 ---
 
+<Update label="v5.2.3" description="8th July 2026">
+## Highlights
+
+- **More AI provider choices.** The AI settings page now supports Mistral AI, Cohere, xAI Grok, Groq, DeepSeek, Together.ai, Fireworks, Cerebras, and Perplexity, with provider defaults filled in for each. Ollama is now labeled as Ollama Cloud to make the hosted integration clearer.
+- **Cleaner cover-letter exports.** Cover-letter PDF, DOCX, and Markdown downloads now export the letter without resume header chrome by default, and PDF downloads include a new toggle for adding the resume header back when needed. [8570c1c70](https://github.com/amruthpillai/reactive-resume/commit/8570c1c70)
+- **More accurate public resume statistics.** Rapid repeat views from the same client are now de-duplicated before incrementing public resume view counts. [97ab3c973](https://github.com/amruthpillai/reactive-resume/commit/97ab3c973)
+
+## AI & Integrations
+
+- Added first-class AI SDK support for Mistral AI, Cohere, xAI, Groq, DeepSeek, Together.ai, Fireworks, Cerebras, and Perplexity across saved provider settings and AI service calls.
+- Made AI provider connection tests work with OpenAI-compatible models that do not support structured output, with a clearer error when a model returns too much text during the test.
+- Published Reactive Resume MCP registry metadata so MCP clients and directories can discover the hosted remote server. [73daf22b2](https://github.com/amruthpillai/reactive-resume/commit/73daf22b2)
+
+## Resume Builder & Exports
+
+- Fixed cover-letter-only exports across PDF, DOCX, and Markdown so they no longer include resume contact details or a redundant cover-letter heading. [8570c1c70](https://github.com/amruthpillai/reactive-resume/commit/8570c1c70)
+- Added an **Include resume header** option for cover-letter PDF downloads.
+- Improved the layout page header so the **Full Width** and **Delete Page** controls fit better in narrow builder sidebars.
+- Simplified the current-template card by removing its hover live preview; template switching still opens the full template gallery.
+
+## Reliability & Self-Hosting
+
+- Added report-only CSP, frame blocking, `nosniff`, and stricter referrer headers to web app shell responses, and tightened public upload headers to rely on same-site resource policy instead of an unconditional CORS header. [9bde7d544](https://github.com/amruthpillai/reactive-resume/commit/9bde7d544)
+- Limited application bulk update and delete requests to 200 selected items per operation to avoid oversized bulk actions. [c9b3fa5c1](https://github.com/amruthpillai/reactive-resume/commit/c9b3fa5c1)
+- Resume lock and password mutations now return `NOT_FOUND` when the resume is missing instead of silently succeeding. [e47cf6e77](https://github.com/amruthpillai/reactive-resume/commit/e47cf6e77)
+- Reduced repeated work in the font picker by computing the font family options once per app process. [7e0657946](https://github.com/amruthpillai/reactive-resume/commit/7e0657946)
+- Refreshed workspace dependencies, including AI SDK provider packages, Lingui, oRPC, Hono, Tiptap, and test tooling.
+
+## Documentation & Localization
+
+- Tightened SEO titles and descriptions across the documentation site. [5270a2a9a](https://github.com/amruthpillai/reactive-resume/commit/5270a2a9a)
+- Corrected the README feature list to describe structured Style Rules instead of custom CSS. [66078609a](https://github.com/amruthpillai/reactive-resume/commit/66078609a)
+- Synced Crowdin translation catalogs and added locale strings for the new AI providers and cover-letter export option. [b87a9d828](https://github.com/amruthpillai/reactive-resume/commit/b87a9d828), [25021507a](https://github.com/amruthpillai/reactive-resume/commit/25021507a)
+
+**Full Changelog**: [v5.2.2...v5.2.3](https://github.com/amruthpillai/reactive-resume/compare/v5.2.2...v5.2.3)
+</Update>
+
 <Update label="v5.2.2" description="7th July 2026">
 ## Highlights
 

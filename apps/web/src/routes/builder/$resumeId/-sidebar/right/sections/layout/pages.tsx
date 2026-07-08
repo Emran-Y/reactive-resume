@@ -297,31 +297,37 @@ function PageContainer({
 
 	return (
 		<div className="space-y-3 rounded-md border border-dashed bg-background/40">
-			<div className="flex items-center justify-between bg-secondary/50 px-4 py-3">
-				<div className="flex w-full items-center gap-4">
-					<span className="font-medium text-xs">
-						<Trans comment="Layout editor page label with 1-based page number">Page {pageIndex + 1}</Trans>
-					</span>
-
-					<label htmlFor={fullWidthSwitchId} className="flex cursor-pointer items-center gap-2">
-						<Switch
-							id={fullWidthSwitchId}
-							checked={page.fullWidth}
-							onCheckedChange={(checked) => onToggleFullWidth(pageIndex, checked)}
-						/>
-
-						<span className="font-medium text-muted-foreground text-xs">
-							<Trans comment="Layout editor toggle label that makes a page single-column">Full Width</Trans>
+			<div className="@container bg-secondary/50 px-4 py-3">
+				<div className="grid @max-[18rem]:grid-cols-1 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2">
+					<div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
+						<span className="font-medium text-xs">
+							<Trans comment="Layout editor page label with 1-based page number">Page {pageIndex + 1}</Trans>
 						</span>
-					</label>
-				</div>
 
-				{canDelete && (
-					<Button variant="ghost" onClick={() => onDelete(pageIndex)} className="h-5 w-auto gap-x-2.5 px-0!">
-						<TrashIcon />
-						<Trans>Delete Page</Trans>
-					</Button>
-				)}
+						<label htmlFor={fullWidthSwitchId} className="flex min-w-0 cursor-pointer items-center gap-2">
+							<Switch
+								id={fullWidthSwitchId}
+								checked={page.fullWidth}
+								onCheckedChange={(checked) => onToggleFullWidth(pageIndex, checked)}
+							/>
+
+							<span className="font-medium text-muted-foreground text-xs">
+								<Trans comment="Layout editor toggle label that makes a page single-column">Full Width</Trans>
+							</span>
+						</label>
+					</div>
+
+					{canDelete && (
+						<Button
+							variant="ghost"
+							onClick={() => onDelete(pageIndex)}
+							className="size-auto gap-x-2.5 justify-self-end p-0!"
+						>
+							<TrashIcon />
+							<Trans>Delete Page</Trans>
+						</Button>
+					)}
+				</div>
 			</div>
 
 			<div

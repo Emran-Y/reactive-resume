@@ -753,6 +753,10 @@ msgstr ""
 msgid "Center Align"
 msgstr ""
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Cerebras"
+msgstr ""
+
 #: src/dialogs/resume/sections/custom.tsx
 #: src/libs/resume/section-title.ts
 #: src/libs/resume/section.tsx
@@ -847,6 +851,10 @@ msgstr ""
 
 #: src/routes/agent/-components/agent-chat.tsx
 msgid "Close AI assistant"
+msgstr ""
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Cohere"
 msgstr ""
 
 #: src/routes/builder/$resumeId/-sidebar/left/sections/custom.tsx
@@ -1275,6 +1283,10 @@ msgstr ""
 
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Decrease zoom"
+msgstr ""
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "DeepSeek"
 msgstr ""
 
 #: src/dialogs/resume/sections/education.tsx
@@ -1880,6 +1892,10 @@ msgstr ""
 msgid "Finnish"
 msgstr ""
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Fireworks"
+msgstr ""
+
 #: src/routes/builder/$resumeId/-components/dock.tsx
 msgid "Fit to view"
 msgstr ""
@@ -2065,6 +2081,10 @@ msgstr ""
 
 #: src/routes/dashboard/resumes/index.tsx
 msgid "Grid"
+msgstr ""
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Groq"
 msgstr ""
 
 #: src/routes/_home/-sections/donate.tsx
@@ -2264,6 +2284,10 @@ msgstr ""
 
 #: src/dialogs/resume/import.tsx
 msgid "Importing…"
+msgstr ""
+
+#: src/features/resume/export/download-dialog.tsx
+msgid "Include resume header"
 msgstr ""
 
 #: src/components/input/rich-input.tsx
@@ -2569,11 +2593,6 @@ msgstr ""
 msgid "Lithuanian"
 msgstr ""
 
-#. placeholder {0}: metadata.name
-#: src/routes/builder/$resumeId/-sidebar/right/sections/template.tsx
-msgid "Live preview of your resume in the {0} template"
-msgstr ""
-
 #: src/dialogs/resume/import.tsx
 msgid "Loading AI providers. Please try again in a moment."
 msgstr ""
@@ -2691,6 +2710,10 @@ msgstr ""
 
 #: src/routes/agent/-components/resume-pane.tsx
 msgid "Missing working resume"
+msgstr ""
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Mistral AI"
 msgstr ""
 
 #: src/features/settings/integrations/components/ai-section.tsx
@@ -2866,7 +2889,7 @@ msgid "Odia"
 msgstr ""
 
 #: src/features/settings/integrations/components/ai-section.tsx
-msgid "Ollama"
+msgid "Ollama Cloud"
 msgstr ""
 
 #: src/routes/_home/-sections/features.tsx
@@ -3084,6 +3107,10 @@ msgstr ""
 #: src/dialogs/resume/sections/project.tsx
 #: src/dialogs/resume/sections/volunteer.tsx
 msgid "Period"
+msgstr ""
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Perplexity"
 msgstr ""
 
 #: src/libs/locale.ts
@@ -3833,6 +3860,10 @@ msgstr ""
 msgid "Show picture"
 msgstr ""
 
+#: src/features/resume/export/download-dialog.tsx
+msgid "Show the same first-page header on the cover letter."
+msgstr ""
+
 #. placeholder {0}: rows.length
 #. placeholder {1}: applications.length
 #: src/features/applications/components/table-view.tsx
@@ -4402,6 +4433,10 @@ msgstr ""
 msgid "To delete your account, you need to enter the confirmation text and click the button below."
 msgstr ""
 
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "Together.ai"
+msgstr ""
+
 #: src/routes/builder/$resumeId/-sidebar/left/shared/section-base.tsx
 #: src/routes/builder/$resumeId/-sidebar/right/shared/section-base.tsx
 msgid "Toggle {sectionTitle} section"
@@ -4854,6 +4889,10 @@ msgstr ""
 
 #: src/routes/_home/-sections/footer.tsx
 msgid "X (Twitter)"
+msgstr ""
+
+#: src/features/settings/integrations/components/ai-section.tsx
+msgid "xAI Grok"
 msgstr ""
 
 #: src/routes/_home/-sections/faq.tsx

@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
@@ -21,6 +22,10 @@ vi.mock("@tanstack/react-query", () => ({
 	useQuery: vi.fn(),
 }));
 
+vi.mock("@tanstack/react-hotkeys", () => ({
+	useHotkeys: vi.fn(),
+}));
+
 vi.mock("@tanstack/react-router", () => ({
 	useNavigate: () => mocks.navigate,
 	useRouteContext: () => ({ session: { user: { id: "user-1" } } }),
@@ -34,6 +39,10 @@ vi.mock("@/dialogs/store", () => ({
 
 vi.mock("@/features/applications/queries", () => ({
 	applicationsListQueryOptions: mocks.applicationsListQueryOptions,
+}));
+
+vi.mock("@/features/theme/provider", () => ({
+	useTheme: () => ({ setTheme: vi.fn(), theme: "light", toggleTheme: vi.fn() }),
 }));
 
 vi.mock("@/libs/orpc/client", () => ({
@@ -53,6 +62,7 @@ vi.mock("@/libs/orpc/client", () => ({
 	},
 }));
 
+const { CommandPalette } = await import("../index");
 const { ResumesCommandGroup } = await import("./resumes");
 const { NavigationCommandGroup } = await import("./navigation");
 
@@ -83,9 +93,81 @@ const renderGroup = () =>
 		</I18nProvider>,
 	);
 
+function TestCommandPalette() {
+	return (
+		<I18nProvider i18n={i18n}>
+			<CommandPalette />
+		</I18nProvider>
+	);
+}
+
 describe("ResumesCommandGroup", () => {
-	it("loads resumes with the default list input on the resumes page", () => {
+	it.each([
+		["resumes", "", "Create a new resume"],
+		["applications", "{ArrowDown}", "New Application"],
+		["threads", "{ArrowDown}{ArrowDown}", "New Thread"],
+	])("opens the %s list page from the root palette with Enter", async (page, keys, createLabel) => {
+		mockUseQueryData((entity) => {
+			if (entity === "resumes") return [{ id: "resume-1", name: "Evil Apricot Pike", slug: "apricot" }];
+			if (entity === "applications")
+				return [{ id: "application-1", company: "Umbrella", role: "Staff Engineer", archived: false }];
+			if (entity === "threads")
+				return [{ id: "thread-1", title: "Cover letter rewrite", resumeName: "Product Resume" }];
+			return [];
+		});
+
+		useCommandPaletteStore.setState({ open: true });
+		render(<TestCommandPalette />);
+		await userEvent.click(screen.getByRole("combobox"));
+		await userEvent.keyboard(`${keys}{Enter}`);
+
+		expect(useCommandPaletteStore.getState().pages).toEqual([page]);
+		expect(await screen.findByText(createLabel)).toBeInTheDocument();
+		expect(screen.queryByText("The command you're looking for doesn't exist.")).not.toBeInTheDocument();
+	});
+
+	it.each([
+		["resumes", "", "Create a new resume", "Evil Apricot Pike"],
+		["applications", "{ArrowDown}", "New Application", "Umbrella"],
+		["threads", "{ArrowDown}{ArrowDown}", "New Thread", "Cover letter rewrite"],
+	])("keeps arrow-key navigation active on the %s list page", async (_page, keys, createLabel, itemLabel) => {
+		mockUseQueryData((entity) => {
+			if (entity === "resumes") return [{ id: "resume-1", name: "Evil Apricot Pike", slug: "apricot" }];
+			if (entity === "applications")
+				return [{ id: "application-1", company: "Umbrella", role: "Staff Engineer", archived: false }];
+			if (entity === "threads")
+				return [{ id: "thread-1", title: "Cover letter rewrite", resumeName: "Product Resume" }];
+			return [];
+		});
+
+		useCommandPaletteStore.setState({ open: true });
+		render(<TestCommandPalette />);
+		await userEvent.click(screen.getByRole("combobox"));
+		await userEvent.keyboard(`${keys}{Enter}`);
+		const createItem = await screen.findByText(createLabel);
+		await userEvent.keyboard("{ArrowDown}");
+
+		expect((await screen.findByText(itemLabel)).closest("[cmdk-item]")).toHaveAttribute("aria-selected", "true");
+		await userEvent.keyboard("{ArrowUp}");
+
+		expect(createItem.closest("[cmdk-item]")).toHaveAttribute("aria-selected", "true");
+	});
+
+	it("does not show resume results beside the root categories on the resumes route", () => {
 		mocks.pathname = "/dashboard/resumes";
+		mockUseQueryData((entity) =>
+			entity === "resumes" ? [{ id: "resume-1", name: "Evil Apricot Pike", slug: "apricot" }] : [],
+		);
+
+		renderGroup();
+
+		expect(screen.getAllByText("Resumes")).toHaveLength(1);
+		expect(screen.queryByText("Create a new resume")).not.toBeInTheDocument();
+		expect(screen.queryByText("Evil Apricot Pike")).not.toBeInTheDocument();
+	});
+
+	it("loads resumes with the default list input after opening the resumes command page", () => {
+		useCommandPaletteStore.setState({ pages: ["resumes"] });
 		mockUseQueryData((entity) =>
 			entity === "resumes" ? [{ id: "resume-1", name: "Evil Apricot Pike", slug: "apricot" }] : [],
 		);
@@ -100,8 +182,7 @@ describe("ResumesCommandGroup", () => {
 	});
 
 	it("filters resume results from the command palette search", () => {
-		mocks.pathname = "/dashboard/resumes";
-		useCommandPaletteStore.setState({ search: "apri" });
+		useCommandPaletteStore.setState({ pages: ["resumes"], search: "apri" });
 		mockUseQueryData((entity) =>
 			entity === "resumes"
 				? [
@@ -118,7 +199,7 @@ describe("ResumesCommandGroup", () => {
 	});
 
 	it("loads applications on the applications page", () => {
-		mocks.pathname = "/dashboard/applications";
+		useCommandPaletteStore.setState({ pages: ["applications"] });
 		mockUseQueryData((entity) =>
 			entity === "applications"
 				? [{ id: "application-1", company: "Umbrella", role: "Staff Engineer", archived: false }]
@@ -132,8 +213,7 @@ describe("ResumesCommandGroup", () => {
 	});
 
 	it("filters application results from the command palette search", () => {
-		mocks.pathname = "/dashboard/applications";
-		useCommandPaletteStore.setState({ search: "umbrella" });
+		useCommandPaletteStore.setState({ pages: ["applications"], search: "umbrella" });
 		mockUseQueryData((entity) =>
 			entity === "applications"
 				? [
@@ -150,7 +230,7 @@ describe("ResumesCommandGroup", () => {
 	});
 
 	it("opens the selected application by id", () => {
-		mocks.pathname = "/dashboard/applications";
+		useCommandPaletteStore.setState({ pages: ["applications"] });
 		mockUseQueryData((entity) =>
 			entity === "applications"
 				? [{ id: "application-1", company: "Umbrella", role: "Staff Engineer", archived: false }]
@@ -167,7 +247,7 @@ describe("ResumesCommandGroup", () => {
 	});
 
 	it("loads threads on agent pages", () => {
-		mocks.pathname = "/agent";
+		useCommandPaletteStore.setState({ pages: ["threads"] });
 		mockUseQueryData((entity) =>
 			entity === "threads" ? [{ id: "thread-1", title: "Cover letter rewrite", resumeName: "Product Resume" }] : [],
 		);
@@ -179,8 +259,7 @@ describe("ResumesCommandGroup", () => {
 	});
 
 	it("filters thread results from the command palette search", () => {
-		mocks.pathname = "/agent";
-		useCommandPaletteStore.setState({ search: "cover" });
+		useCommandPaletteStore.setState({ pages: ["threads"], search: "cover" });
 		mockUseQueryData((entity) =>
 			entity === "threads"
 				? [

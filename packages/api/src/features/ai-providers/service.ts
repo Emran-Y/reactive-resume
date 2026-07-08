@@ -143,7 +143,7 @@ export const aiProvidersService = {
 					eq(schema.aiProvider.testStatus, "success"),
 				),
 			)
-			.orderBy(orderByLastUsedAtDescNullsLast(), asc(schema.aiProvider.createdAt))
+			.orderBy(asc(schema.aiProvider.createdAt))
 			.limit(1);
 
 		return provider

@@ -11,7 +11,7 @@ import {
 	FileTextIcon,
 	MarkdownLogoIcon,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@reactive-resume/ui/components/button";
 import {
 	Dialog,
@@ -21,6 +21,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@reactive-resume/ui/components/dialog";
+import { Switch } from "@reactive-resume/ui/components/switch";
 import { Tabs, TabsList, TabsTrigger } from "@reactive-resume/ui/components/tabs";
 import { cn } from "@reactive-resume/utils/style";
 import { useResumeExport } from "./use-resume-export";
@@ -63,6 +64,8 @@ function FormatRow({ action, description, disabled, icon, title }: FormatRowProp
 export function ResumeDownloadDialog({ resume, trigger }: ResumeDownloadDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [scope, setScope] = useState<ResumeExportTarget>("resume");
+	const [includeCoverLetterHeader, setIncludeCoverLetterHeader] = useState(false);
+	const includeHeaderSwitchId = useId();
 	const { hasCoverLetter, isExporting, onDownloadDOCX, onDownloadJSON, onDownloadMarkdown, onDownloadPDF } =
 		useResumeExport(resume);
 	const disabled = !resume || isExporting;
@@ -102,6 +105,28 @@ export function ResumeDownloadDialog({ resume, trigger }: ResumeDownloadDialogPr
 					</TabsList>
 				</Tabs>
 
+				{activeScope === "cover-letter" && (
+					<label
+						htmlFor={includeHeaderSwitchId}
+						className="flex cursor-pointer items-center gap-3 rounded-lg border bg-background p-3"
+					>
+						<Switch
+							id={includeHeaderSwitchId}
+							checked={includeCoverLetterHeader}
+							onCheckedChange={setIncludeCoverLetterHeader}
+						/>
+
+						<span className="flex min-w-0 flex-1 flex-col gap-0.5">
+							<span className="font-medium text-sm">
+								<Trans>Include resume header</Trans>
+							</span>
+							<span className="text-muted-foreground text-xs leading-normal">
+								<Trans>Show the same first-page header on the cover letter.</Trans>
+							</span>
+						</span>
+					</label>
+				)}
+
 				<div className="grid gap-2">
 					<FormatRow
 						icon={
@@ -114,7 +139,7 @@ export function ResumeDownloadDialog({ resume, trigger }: ResumeDownloadDialogPr
 								size="sm"
 								aria-label="Download PDF"
 								disabled={isExporting}
-								onClick={() => run(() => onDownloadPDF(activeScope))}
+								onClick={() => run(() => onDownloadPDF(activeScope, { includeCoverLetterHeader }))}
 							>
 								<DownloadSimpleIcon />
 								<Trans>Download</Trans>

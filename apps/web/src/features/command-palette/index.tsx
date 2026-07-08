@@ -1,7 +1,7 @@
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { useHotkeys } from "@tanstack/react-hotkeys";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Command, CommandEmpty, CommandInput, CommandList } from "@reactive-resume/ui/components/command";
 import {
 	Dialog,
@@ -17,6 +17,8 @@ import { useCommandPaletteStore } from "./store";
 
 export function CommandPalette() {
 	const inputRef = useRef<HTMLInputElement>(null);
+	const commandRef = useRef<HTMLDivElement>(null);
+	const [selectedValue, setSelectedValue] = useState<string>();
 	const { open, search, pages, setOpen, setSearch, goBack } = useCommandPaletteStore();
 
 	const isFirstPage = pages.length === 0;
@@ -67,6 +69,16 @@ export function CommandPalette() {
 		setSearch(value);
 	};
 
+	useEffect(() => {
+		if (!open) return;
+
+		const firstItem = commandRef.current?.querySelector<HTMLElement>('[cmdk-item]:not([aria-disabled="true"])');
+		const value = firstItem?.getAttribute("data-value");
+
+		if (value) setSelectedValue(value);
+		inputRef.current?.focus();
+	}, [open]);
+
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogHeader className="sr-only print:hidden">
@@ -97,7 +109,10 @@ export function CommandPalette() {
 				}
 			>
 				<Command
+					ref={commandRef}
 					loop
+					value={selectedValue}
+					onValueChange={setSelectedValue}
 					aria-label={t({
 						comment: "Accessible label for command list region inside command palette",
 						message: "Command Palette",
@@ -125,7 +140,7 @@ export function CommandPalette() {
 						})}
 					/>
 
-					<CommandList>
+					<CommandList key={currentPage ?? "root"}>
 						<CommandEmpty>
 							<Trans comment="Empty-state message when no command palette results match the search query">
 								The command you're looking for doesn't exist.

@@ -19,14 +19,14 @@
 		"@reactive-resume/env": "workspace:*",
 		"nodemailer": "^9.0.3",
 		"react": "^19.2.7",
-		"react-email": "^6.6.6"
+		"react-email": "^6.6.8"
 	},
 	"devDependencies": {
-		"@react-email/ui": "^6.6.6",
+		"@react-email/ui": "^6.6.8",
 		"@reactive-resume/config": "workspace:*",
 		"@types/nodemailer": "^8.0.1",
 		"@types/react": "^19.2.17",
-		"@typescript/native-preview": "7.0.0-dev.20260705.1",
-		"typescript": "^6.0.3"
+		"@typescript/native-preview": "7.0.0-dev.20260707.2",
+		"typescript": "^7.0.2"
 	}
 }

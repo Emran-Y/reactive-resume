@@ -2,6 +2,7 @@ import type { LayoutPage, ResumeData, Typography } from "@reactive-resume/schema
 import type { Template } from "@reactive-resume/schema/templates";
 import type { Locale } from "@reactive-resume/utils/locale";
 import type { ComponentType } from "react";
+import type { ResumeRenderOptions } from "./context";
 import type { SectionTitleResolver } from "./section-title";
 import { useMemo } from "react";
 import { Document } from "#react-pdf-renderer";
@@ -19,13 +20,14 @@ export type TemplatePage = ComponentType<TemplatePageProps>;
 type ResumeDocumentProps = {
 	data: ResumeData;
 	template: Template;
+	renderOptions?: ResumeRenderOptions | undefined;
 	resolveSectionTitle?: SectionTitleResolver | undefined;
 };
 
 const getLayoutPageKey = (page: LayoutPage, pageIndex: number) =>
 	`${page.fullWidth ? "full" : "split"}:${page.main.join(",")}:${page.sidebar.join(",")}:${pageIndex}`;
 
-export const ResumeDocument = ({ data, template, resolveSectionTitle }: ResumeDocumentProps) => {
+export const ResumeDocument = ({ data, template, renderOptions, resolveSectionTitle }: ResumeDocumentProps) => {
 	const TemplatePageComponent = getTemplatePage(template);
 	const creationDate = useMemo(() => new Date(), []);
 	const hasCjkContent = useMemo(() => resumeContentContainsCJK(data), [data]);
@@ -43,7 +45,7 @@ export const ResumeDocument = ({ data, template, resolveSectionTitle }: ResumeDo
 	const resumeData = useMemo(() => ({ ...data, metadata: { ...data.metadata, typography } }), [data, typography]);
 
 	return (
-		<RenderProvider data={resumeData} resolveSectionTitle={resolveSectionTitle}>
+		<RenderProvider data={resumeData} resolveSectionTitle={resolveSectionTitle} renderOptions={renderOptions}>
 			<Document
 				pageMode="useNone"
 				creationDate={creationDate}

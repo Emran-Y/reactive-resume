@@ -142,6 +142,27 @@ describe("AISettingsSection", () => {
 		mutations.delete.mockReset();
 	});
 
+	it("offers popular AI SDK providers and labels Ollama as cloud-hosted", () => {
+		renderSection();
+
+		for (const label of [
+			"Mistral AI",
+			"Cohere",
+			"xAI Grok",
+			"Groq",
+			"DeepSeek",
+			"Together.ai",
+			"Fireworks",
+			"Cerebras",
+			"Perplexity",
+			"Ollama Cloud",
+		]) {
+			expect(screen.getByRole("option", { name: label })).toBeInTheDocument();
+		}
+
+		expect(screen.queryByRole("option", { name: "Ollama" })).not.toBeInTheDocument();
+	});
+
 	it("uses the save-and-test result as the connected provider row", async () => {
 		const created = provider({});
 		const tested = provider({ enabled: true, testStatus: "success", lastTestedAt: new Date("2026-07-04T01:00:00Z") });

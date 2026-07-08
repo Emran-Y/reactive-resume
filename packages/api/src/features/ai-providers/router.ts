@@ -2,25 +2,10 @@ import type { AiProviderResponse } from "./service";
 import { ORPCError } from "@orpc/client";
 import { type } from "@orpc/server";
 import z from "zod";
-import { aiProviderSchema } from "@reactive-resume/ai/types";
 import { protectedProcedure } from "../../context";
 import { aiRequestRateLimit } from "../../middleware/rate-limit";
+import { providerInput, updateProviderInput } from "./inputs";
 import { aiProvidersService } from "./service";
-
-const providerInput = z.object({
-	label: z.string().trim().min(1),
-	provider: aiProviderSchema,
-	model: z.string().trim().min(1),
-	baseURL: z.string().trim().optional().default(""),
-	apiKey: z.string().trim().min(1),
-});
-
-const updateProviderInput = providerInput
-	.partial()
-	.extend({ id: z.string(), enabled: z.boolean().optional() })
-	.refine((input) => Object.keys(input).some((key) => key !== "id"), {
-		message: "At least one field must be provided.",
-	});
 
 function isAgentEnvironmentUnavailable(error: unknown) {
 	return error instanceof Error && error.message === "AGENT_ENVIRONMENT_UNAVAILABLE";
@@ -85,7 +70,7 @@ export const aiProvidersRouter = {
 					label: input.label,
 					provider: input.provider,
 					model: input.model,
-					baseURL: input.baseURL,
+					...(input.baseURL !== undefined ? { baseURL: input.baseURL } : {}),
 					apiKey: input.apiKey,
 				});
 			} catch (error) {

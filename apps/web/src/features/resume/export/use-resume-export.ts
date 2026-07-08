@@ -33,6 +33,10 @@ const getExportName = (resume: ExportableResume) => resume.name || resume.data.b
 const getTargetExportName = (resume: ExportableResume, target: ResumeExportTarget) =>
 	target === "cover-letter" ? `${getExportName(resume)} Cover Letter` : getExportName(resume);
 
+type DownloadPdfOptions = {
+	includeCoverLetterHeader?: boolean;
+};
+
 /**
  * Single source of truth for resume export (PDF / DOCX / JSON / Print). Previously duplicated verbatim
  * between the builder dock and the right-panel Export section (#17).
@@ -76,14 +80,18 @@ export function useResumeExport(resume: ExportableResume | undefined) {
 	);
 
 	const onDownloadPDF = useCallback(
-		async (target: ResumeExportTarget = "resume") => {
+		async (target: ResumeExportTarget = "resume", options?: DownloadPdfOptions) => {
 			if (!resume) return;
 			if (target === "cover-letter" && !resumeHasCoverLetter(resume.data)) return;
 			const toastId = toast.loading(t`Please wait while your PDF is being generated...`);
 			setIsExporting(true);
 			try {
 				const data = getResumeExportData(resume.data, target);
-				const blob = await createResumePdfBlob(data);
+				const blob = await createResumePdfBlob(
+					data,
+					undefined,
+					target === "cover-letter" ? { includeCoverLetterHeader: options?.includeCoverLetterHeader } : undefined,
+				);
 				downloadWithAnchor(blob, generateFilename(getTargetExportName(resume, target), "pdf"));
 			} catch {
 				toast.error(t`There was a problem while generating the PDF, please try again.`);

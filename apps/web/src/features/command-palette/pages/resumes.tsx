@@ -3,7 +3,7 @@ import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BriefcaseIcon, ChatCircleDotsIcon, PlusIcon, ReadCvLogoIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useRouteContext, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { CommandLoading } from "cmdk";
 import { CommandItem, CommandShortcut } from "@reactive-resume/ui/components/command";
 import { Kbd } from "@reactive-resume/ui/components/kbd";
@@ -20,12 +20,6 @@ type SearchPage = "resumes" | "applications" | "threads";
 const isSearchPage = (page: string | undefined): page is SearchPage =>
 	page === "resumes" || page === "applications" || page === "threads";
 
-const getRouteSearchPage = (pathname: string): SearchPage | undefined => {
-	if (pathname.startsWith("/dashboard/resumes")) return "resumes";
-	if (pathname.startsWith("/dashboard/applications")) return "applications";
-	if (pathname.startsWith("/agent")) return "threads";
-};
-
 const matchesSearch = (search: string, values: Array<string | null | undefined>) => {
 	const query = search.trim().toLowerCase();
 	return !query || values.some((value) => value?.toLowerCase().includes(query));
@@ -35,7 +29,6 @@ export function ResumesCommandGroup() {
 	const navigate = useNavigate();
 	const { openDialog } = useDialogStore();
 	const { session } = useRouteContext({ strict: false });
-	const pathname = useRouterState({ select: (state) => state.location.pathname });
 	const reset = useCommandPaletteStore((state) => state.reset);
 	const peekPage = useCommandPaletteStore((state) => state.peekPage);
 	const pushPage = useCommandPaletteStore((state) => state.pushPage);
@@ -43,7 +36,7 @@ export function ResumesCommandGroup() {
 
 	const commandPage = peekPage();
 	const commandSearchPage = isSearchPage(commandPage) ? commandPage : undefined;
-	const searchPage = commandSearchPage ?? (!commandPage ? getRouteSearchPage(pathname) : undefined);
+	const searchPage = commandSearchPage;
 
 	const { data: resumes, isLoading } = useQuery(
 		orpc.resume.list.queryOptions({
