@@ -87,15 +87,42 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^4.0.10
         version: 4.0.10(zod@4.4.3)
+      '@ai-sdk/cerebras':
+        specifier: ^3.0.6
+        version: 3.0.6(zod@4.4.3)
+      '@ai-sdk/cohere':
+        specifier: ^4.0.6
+        version: 4.0.6(zod@4.4.3)
+      '@ai-sdk/deepseek':
+        specifier: ^3.0.6
+        version: 3.0.6(zod@4.4.3)
+      '@ai-sdk/fireworks':
+        specifier: ^3.0.7
+        version: 3.0.7(zod@4.4.3)
       '@ai-sdk/google':
         specifier: ^4.0.10
         version: 4.0.10(zod@4.4.3)
+      '@ai-sdk/groq':
+        specifier: ^4.0.6
+        version: 4.0.6(zod@4.4.3)
+      '@ai-sdk/mistral':
+        specifier: ^4.0.7
+        version: 4.0.7(zod@4.4.3)
       '@ai-sdk/openai':
         specifier: ^4.0.9
         version: 4.0.9(zod@4.4.3)
       '@ai-sdk/openai-compatible':
         specifier: ^3.0.6
         version: 3.0.6(zod@4.4.3)
+      '@ai-sdk/perplexity':
+        specifier: ^4.0.7
+        version: 4.0.7(zod@4.4.3)
+      '@ai-sdk/togetherai':
+        specifier: ^3.0.7
+        version: 3.0.7(zod@4.4.3)
+      '@ai-sdk/xai':
+        specifier: ^4.0.9
+        version: 4.0.9(zod@4.4.3)
       '@aws-sdk/client-s3':
         specifier: ^3.1081.0
         version: 3.1081.0
