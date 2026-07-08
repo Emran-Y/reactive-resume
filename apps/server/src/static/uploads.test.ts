@@ -33,6 +33,8 @@ describe("handleUpload", () => {
 		expect(response.status).toBe(200);
 		expect(readMock).toHaveBeenCalledWith("uploads/user-1/pictures/photo.jpeg");
 		expect(response.headers.get("Content-Type")).toBe("image/jpeg");
+		expect(response.headers.get("Cross-Origin-Resource-Policy")).toBe("same-site");
+		expect(response.headers.get("Access-Control-Allow-Origin")).toBeNull();
 	});
 
 	it("does not serve private agent attachment keys through the public uploads route", async () => {

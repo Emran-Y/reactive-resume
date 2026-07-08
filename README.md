@@ -60,7 +60,7 @@ If your company would like to sponsor Reactive Resume, email [hello@amruthpillai
 - Professionally designed templates
 - A4 and Letter size support
 - Customizable colors, fonts, and spacing
-- Custom CSS for advanced styling
+- Structured Style Rules for section and text styling
 
 **Privacy & Control**
 

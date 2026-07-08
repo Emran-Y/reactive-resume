@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import { basename, extname, normalize } from "node:path";
 import { getStorageService, inferContentType } from "@reactive-resume/api/features/storage";
-import { env } from "@reactive-resume/env/server";
 
 export async function handleUpload(request: Request) {
 	const { userId, filePath } = parseRouteParams(request.url);
@@ -41,7 +40,6 @@ export async function handleUpload(request: Request) {
 	headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 	headers.set("X-Frame-Options", "DENY");
 	headers.set("X-Download-Options", "noopen");
-	headers.set("Access-Control-Allow-Origin", env.APP_URL);
 
 	return new Response(toArrayBuffer(storedFile.data), { headers });
 }
