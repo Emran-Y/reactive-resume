@@ -17,6 +17,7 @@ import { getStorageService } from "../storage/service";
 import { grantResumeAccess, hasResumeAccess } from "./access";
 import { assertCanView, isOwner, redactResumeForViewer, shouldCountForStatistics } from "./access-policy";
 import { publishResumeUpdated } from "./events";
+import { clientKeyFromHeaders, shouldCountView } from "./view-dedup";
 
 type DbOrTx = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -503,7 +504,10 @@ export const resumeService = {
 		}
 
 		if (shouldCountForStatistics(resume, viewer)) {
-			await resumeService.statistics.increment({ id: resume.id, views: true });
+			const key = `${resume.id}:${clientKeyFromHeaders(input.requestHeaders)}`;
+			if (shouldCountView(key, Date.now())) {
+				await resumeService.statistics.increment({ id: resume.id, views: true });
+			}
 		}
 
 		return toSharedResumeResponse(redactResumeForViewer(resume, isOwner(resume, viewer)), resume.hasPassword);
@@ -667,7 +671,7 @@ export const resumeService = {
 			.where(and(eq(schema.resume.id, input.id), eq(schema.resume.userId, input.userId)))
 			.returning({ id: schema.resume.id, updatedAt: schema.resume.updatedAt });
 
-		if (!resume) return;
+		if (!resume) throw new ORPCError("NOT_FOUND");
 
 		await notifyResumeUpdated({
 			type: "resume.updated",
@@ -687,7 +691,7 @@ export const resumeService = {
 			.where(and(eq(schema.resume.id, input.id), eq(schema.resume.userId, input.userId)))
 			.returning({ id: schema.resume.id, updatedAt: schema.resume.updatedAt });
 
-		if (!resume) return;
+		if (!resume) throw new ORPCError("NOT_FOUND");
 
 		await notifyResumeUpdated({
 			type: "resume.updated",
@@ -730,7 +734,7 @@ export const resumeService = {
 			.where(and(eq(schema.resume.id, input.id), eq(schema.resume.userId, input.userId)))
 			.returning({ id: schema.resume.id, updatedAt: schema.resume.updatedAt });
 
-		if (!resume) return;
+		if (!resume) throw new ORPCError("NOT_FOUND");
 
 		await notifyResumeUpdated({
 			type: "resume.updated",

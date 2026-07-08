@@ -83,3 +83,24 @@ describe("applicationDto zero-argument inputs", () => {
 		expect(applicationDto.tags.input.parse(undefined)).toEqual({});
 	});
 });
+
+// Bulk operations cap `ids` at 200 to bound memory/DB work from a single call.
+describe("applicationDto bulk id caps", () => {
+	const idsOfLength = (n: number) => Array.from({ length: n }, (_, i) => String(i));
+
+	it("rejects a bulkDelete ids array over the cap", () => {
+		expect(applicationDto.bulkDelete.input.safeParse({ ids: idsOfLength(201) }).success).toBe(false);
+	});
+
+	it("accepts a bulkDelete ids array at the cap", () => {
+		expect(applicationDto.bulkDelete.input.safeParse({ ids: idsOfLength(200) }).success).toBe(true);
+	});
+
+	it("rejects a bulkUpdate ids array over the cap", () => {
+		expect(applicationDto.bulkUpdate.input.safeParse({ ids: idsOfLength(201) }).success).toBe(false);
+	});
+
+	it("accepts a bulkUpdate ids array at the cap", () => {
+		expect(applicationDto.bulkUpdate.input.safeParse({ ids: idsOfLength(200) }).success).toBe(true);
+	});
+});
