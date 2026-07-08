@@ -667,7 +667,7 @@ export const resumeService = {
 			.where(and(eq(schema.resume.id, input.id), eq(schema.resume.userId, input.userId)))
 			.returning({ id: schema.resume.id, updatedAt: schema.resume.updatedAt });
 
-		if (!resume) return;
+		if (!resume) throw new ORPCError("NOT_FOUND");
 
 		await notifyResumeUpdated({
 			type: "resume.updated",
@@ -687,7 +687,7 @@ export const resumeService = {
 			.where(and(eq(schema.resume.id, input.id), eq(schema.resume.userId, input.userId)))
 			.returning({ id: schema.resume.id, updatedAt: schema.resume.updatedAt });
 
-		if (!resume) return;
+		if (!resume) throw new ORPCError("NOT_FOUND");
 
 		await notifyResumeUpdated({
 			type: "resume.updated",
@@ -730,7 +730,7 @@ export const resumeService = {
 			.where(and(eq(schema.resume.id, input.id), eq(schema.resume.userId, input.userId)))
 			.returning({ id: schema.resume.id, updatedAt: schema.resume.updatedAt });
 
-		if (!resume) return;
+		if (!resume) throw new ORPCError("NOT_FOUND");
 
 		await notifyResumeUpdated({
 			type: "resume.updated",

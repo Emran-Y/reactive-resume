@@ -187,12 +187,13 @@ describe("setLocked", () => {
 		expect(publishResumeUpdatedMock).toHaveBeenCalledWith(expect.objectContaining({ mutation: "lock" }));
 	});
 
-	// Characterizes current behavior: silent no-op when no row matches. Plan 003 flips this to
-	// reject with NOT_FOUND (that test diff is the intended signal the behavior changed).
-	it("silently resolves undefined when no row matches, without notifying", async () => {
+	// Plan 003: no matching row now rejects with NOT_FOUND (previously a silent resolve).
+	it("throws NOT_FOUND when no row matches, without notifying", async () => {
 		dbMock.update.mockReturnValueOnce(createUpdateChain([]).chain);
 
-		await expect(resumeService.setLocked({ id: "r1", userId: "u1", isLocked: true })).resolves.toBeUndefined();
+		await expect(resumeService.setLocked({ id: "r1", userId: "u1", isLocked: true })).rejects.toMatchObject({
+			code: "NOT_FOUND",
+		});
 		expect(publishResumeUpdatedMock).not.toHaveBeenCalled();
 	});
 });
@@ -210,12 +211,13 @@ describe("setPassword", () => {
 		expect(publishResumeUpdatedMock).toHaveBeenCalledWith(expect.objectContaining({ mutation: "password" }));
 	});
 
-	// Characterizes current behavior: silent no-op when no row matches. Plan 003 flips this to
-	// reject with NOT_FOUND (that test diff is the intended signal the behavior changed).
-	it("silently resolves undefined when no row matches, without notifying", async () => {
+	// Plan 003: no matching row now rejects with NOT_FOUND (previously a silent resolve).
+	it("throws NOT_FOUND when no row matches, without notifying", async () => {
 		dbMock.update.mockReturnValueOnce(createUpdateChain([]).chain);
 
-		await expect(resumeService.setPassword({ id: "r1", userId: "u1", password: "secret" })).resolves.toBeUndefined();
+		await expect(resumeService.setPassword({ id: "r1", userId: "u1", password: "secret" })).rejects.toMatchObject({
+			code: "NOT_FOUND",
+		});
 		expect(publishResumeUpdatedMock).not.toHaveBeenCalled();
 	});
 });
@@ -232,12 +234,13 @@ describe("removePassword", () => {
 		expect(publishResumeUpdatedMock).toHaveBeenCalledWith(expect.objectContaining({ mutation: "password" }));
 	});
 
-	// Characterizes current behavior: silent no-op when no row matches. Plan 003 flips this to
-	// reject with NOT_FOUND (that test diff is the intended signal the behavior changed).
-	it("silently resolves undefined when no row matches, without notifying", async () => {
+	// Plan 003: no matching row now rejects with NOT_FOUND (previously a silent resolve).
+	it("throws NOT_FOUND when no row matches, without notifying", async () => {
 		dbMock.update.mockReturnValueOnce(createUpdateChain([]).chain);
 
-		await expect(resumeService.removePassword({ id: "r1", userId: "u1" })).resolves.toBeUndefined();
+		await expect(resumeService.removePassword({ id: "r1", userId: "u1" })).rejects.toMatchObject({
+			code: "NOT_FOUND",
+		});
 		expect(publishResumeUpdatedMock).not.toHaveBeenCalled();
 	});
 });
