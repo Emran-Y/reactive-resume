@@ -5,25 +5,25 @@ import { cn } from "@reactive-resume/utils/style";
 import { Combobox } from "@/components/ui/combobox";
 import { FontDisplay } from "./font-display";
 
+// Options depend only on the static font list, so compute them once per process
+// instead of per component instance (the body + heading pickers rendered identical output twice).
+const FONT_FAMILY_OPTIONS = fontList.map((font) => ({
+	value: font.family,
+	keywords: getFontSearchKeywords(font.family),
+	label: (
+		<FontDisplay
+			family={font.family}
+			label={getFontDisplayName(font.family)}
+			type={font.type}
+			url={"preview" in font ? font.preview : undefined}
+		/>
+	),
+}));
+
 type FontFamilyComboboxProps = Omit<SingleComboboxProps, "options">;
 
 export function FontFamilyCombobox({ className, ...props }: FontFamilyComboboxProps) {
-	const options = useMemo(() => {
-		return fontList.map((font) => ({
-			value: font.family,
-			keywords: getFontSearchKeywords(font.family),
-			label: (
-				<FontDisplay
-					family={font.family}
-					label={getFontDisplayName(font.family)}
-					type={font.type}
-					url={"preview" in font ? font.preview : undefined}
-				/>
-			),
-		}));
-	}, []);
-
-	return <Combobox {...props} options={options} className={cn("w-full", className)} />;
+	return <Combobox {...props} options={FONT_FAMILY_OPTIONS} className={cn("w-full", className)} />;
 }
 
 type FontWeightComboboxProps = Omit<MultiComboboxProps, "options" | "multiple"> & { fontFamily: string };
