@@ -162,7 +162,7 @@ export const applicationDto = {
 	// Table bulk actions: move stage, archive/unarchive, add tags across a selection.
 	bulkUpdate: {
 		input: z.object({
-			ids: z.array(z.string()).min(1),
+			ids: z.array(z.string()).min(1).max(200, "Too many items in a single bulk operation"),
 			status: applicationStatusSchema.optional(),
 			archived: z.boolean().optional(),
 			addTags: z.array(z.string()).optional(),
@@ -171,7 +171,7 @@ export const applicationDto = {
 	},
 
 	bulkDelete: {
-		input: z.object({ ids: z.array(z.string()).min(1) }),
+		input: z.object({ ids: z.array(z.string()).min(1).max(200, "Too many items in a single bulk operation") }),
 		output: z.object({ deleted: z.number() }),
 	},
 
