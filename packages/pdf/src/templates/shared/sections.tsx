@@ -749,7 +749,7 @@ const AwardsSection = ({ sectionId = "awards", sectionData }: ItemSectionProps<A
 					<SectionItem key={item.id}>
 						<SectionItemHeader>
 							<View style={composeStyles(splitRowStyle, awardTitleDateRowStyle)}>
-								<ItemTitle website={item.website}>{item.title}</ItemTitle>
+								<ItemTitle website={item.website} bold={false}>{item.title}</ItemTitle>
 								<Text style={composeStyles(alignEndStyle)}>{item.date}</Text>
 							</View>
 							<Text>{item.awarder}</Text>
